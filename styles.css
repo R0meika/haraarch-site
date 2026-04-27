@@ -891,13 +891,14 @@ a.project-row:focus-visible .project-render img {
 
   .topbar.is-compact .brand {
     width: 100%;
+    justify-content: center;
   }
 
   .topbar.is-compact .brand-mark {
     font-size: clamp(4rem, 20vw, 5rem);
     line-height: 0.8;
     transform: scaleX(1.14);
-    transform-origin: left center;
+    transform-origin: center;
   }
 
   .topbar.is-compact .topbar-meta {
