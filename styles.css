@@ -878,8 +878,15 @@ a.project-row:focus-visible .project-render img {
   }
 
   .topbar {
+    justify-items: center;
     gap: 5px;
     padding: 12px var(--page-gutter) 10px;
+    text-align: center;
+  }
+
+  .topbar .brand {
+    width: 100%;
+    justify-content: center;
   }
 
   .topbar.is-compact {
@@ -915,8 +922,12 @@ a.project-row:focus-visible .project-render img {
 
   .topbar-meta {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    align-items: center;
+    gap: 0;
+  }
+
+  .topbar .nav {
+    display: none;
   }
 
   .nav {
@@ -953,13 +964,12 @@ a.project-row:focus-visible .project-render img {
   }
 
   .info-bar::before {
-    left: var(--page-gutter);
-    right: var(--page-gutter);
+    display: none;
   }
 
   .info-bar-grid {
     gap: 0;
-    padding: 16px 0 0;
+    padding: 14px 0 0;
   }
 
   .info-bar .hero-meta,
@@ -973,14 +983,7 @@ a.project-row:focus-visible .project-render img {
   }
 
   .hero {
-    padding-top: 28px;
-    min-height: auto;
-  }
-
-  .hero h1 {
-    max-width: 100%;
-    line-height: 1.04;
-    letter-spacing: 0;
+    display: none;
   }
 
   .project-page-main {
