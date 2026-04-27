@@ -34,6 +34,18 @@ const syncStickyHeights = () => {
   root.style.setProperty("--info-bar-height", `${infoBar?.offsetHeight || 0}px`);
 };
 
+const syncTopbarState = () => {
+  if (!topbar) {
+    return;
+  }
+
+  const changed = topbar.classList.toggle("is-compact", window.scrollY > 28);
+
+  if (changed) {
+    window.requestAnimationFrame(syncStickyHeights);
+  }
+};
+
 const classifyGalleryItems = () => {
   projectGalleries.forEach((gallery) => {
     gallery.querySelectorAll("figure").forEach((item) => {
@@ -183,9 +195,16 @@ const lightboxCaption = lightbox.querySelector(".gallery-lightbox-caption");
 const lightboxClose = lightbox.querySelector(".gallery-lightbox-close");
 const lightboxPrev = lightbox.querySelector(".gallery-lightbox-prev");
 const lightboxNext = lightbox.querySelector(".gallery-lightbox-next");
+const lightboxFrame = lightbox.querySelector(".gallery-lightbox-frame");
 
 let activeGalleryItems = [];
 let activeGalleryIndex = 0;
+let lightboxPointerId = null;
+let lightboxStartX = 0;
+let lightboxStartY = 0;
+let lightboxTouchId = null;
+let lightboxTouchStartX = 0;
+let lightboxTouchStartY = 0;
 
 const renderLightboxItem = () => {
   const current = activeGalleryItems[activeGalleryIndex];
@@ -225,16 +244,88 @@ const stepLightbox = (direction) => {
   renderLightboxItem();
 };
 
+const stepLightboxFromSwipe = (deltaX, deltaY) => {
+  if (Math.abs(deltaX) < 46 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) {
+    return false;
+  }
+
+  stepLightbox(deltaX < 0 ? 1 : -1);
+  return true;
+};
+
+const startLightboxSwipe = (event) => {
+  if (!lightbox.classList.contains("is-open") || event.pointerType !== "pen") {
+    return;
+  }
+
+  lightboxPointerId = event.pointerId;
+  lightboxStartX = event.clientX;
+  lightboxStartY = event.clientY;
+  lightboxFrame.setPointerCapture?.(event.pointerId);
+};
+
+const finishLightboxSwipe = (event) => {
+  if (lightboxPointerId !== event.pointerId) {
+    return;
+  }
+
+  const deltaX = event.clientX - lightboxStartX;
+  const deltaY = event.clientY - lightboxStartY;
+  lightboxPointerId = null;
+
+  stepLightboxFromSwipe(deltaX, deltaY);
+};
+
+const startLightboxTouchSwipe = (event) => {
+  if (!lightbox.classList.contains("is-open")) {
+    return;
+  }
+
+  const touch = event.changedTouches[0];
+
+  if (!touch) {
+    return;
+  }
+
+  lightboxTouchId = touch.identifier;
+  lightboxTouchStartX = touch.clientX;
+  lightboxTouchStartY = touch.clientY;
+};
+
+const finishLightboxTouchSwipe = (event) => {
+  if (lightboxTouchId === null) {
+    return;
+  }
+
+  const touch = Array.from(event.changedTouches).find((item) => item.identifier === lightboxTouchId);
+
+  if (!touch) {
+    return;
+  }
+
+  const deltaX = touch.clientX - lightboxTouchStartX;
+  const deltaY = touch.clientY - lightboxTouchStartY;
+  lightboxTouchId = null;
+
+  if (stepLightboxFromSwipe(deltaX, deltaY)) {
+    event.preventDefault();
+  }
+};
+
 if (yearNode) {
   yearNode.textContent = new Date().getFullYear();
 }
 
 syncStickyHeights();
+syncTopbarState();
 classifyGalleryItems();
 window.addEventListener("resize", syncStickyHeights);
+window.addEventListener("resize", syncTopbarState);
 window.addEventListener("resize", classifyGalleryItems);
 window.addEventListener("load", syncStickyHeights);
+window.addEventListener("load", syncTopbarState);
 window.addEventListener("load", classifyGalleryItems);
+window.addEventListener("scroll", syncTopbarState, { passive: true });
 
 if (document.fonts?.ready) {
   document.fonts.ready.then(syncStickyHeights);
@@ -286,6 +377,16 @@ draggableGalleries.forEach((gallery) => {
 lightboxClose.addEventListener("click", closeLightbox);
 lightboxPrev.addEventListener("click", () => stepLightbox(-1));
 lightboxNext.addEventListener("click", () => stepLightbox(1));
+lightboxFrame.addEventListener("pointerdown", startLightboxSwipe);
+lightboxFrame.addEventListener("pointerup", finishLightboxSwipe);
+lightboxFrame.addEventListener("pointercancel", () => {
+  lightboxPointerId = null;
+});
+lightboxFrame.addEventListener("touchstart", startLightboxTouchSwipe, { passive: true });
+lightboxFrame.addEventListener("touchend", finishLightboxTouchSwipe);
+lightboxFrame.addEventListener("touchcancel", () => {
+  lightboxTouchId = null;
+});
 
 lightbox.addEventListener("click", (event) => {
   if (event.target === lightbox) {
