@@ -862,10 +862,11 @@ a.project-row:focus-visible .project-render img {
 @media (max-width: 760px) {
   :root {
     --page-gutter: 18px;
+    --fs-display: 3.15rem;
   }
 
   .site-shell {
-    padding: 0 0 calc(var(--info-bar-height) + 16px);
+    padding: 0 0 24px;
   }
 
   .topbar {
@@ -899,9 +900,14 @@ a.project-row:focus-visible .project-render img {
   }
 
   .info-bar {
+    position: relative;
     right: 0;
     left: 0;
     padding: 0 var(--page-gutter);
+    margin-top: 30px;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .info-bar::before {
@@ -909,9 +915,28 @@ a.project-row:focus-visible .project-render img {
     right: var(--page-gutter);
   }
 
+  .info-bar-grid {
+    gap: 22px;
+    padding: 18px 0 0;
+  }
+
   .hero {
     padding-top: 34px;
     min-height: auto;
+  }
+
+  .hero h1 {
+    max-width: 100%;
+    line-height: 1.04;
+    letter-spacing: 0;
+  }
+
+  .lead,
+  .approach-grid p,
+  .project-note,
+  .contact-text,
+  .contact-details p {
+    line-height: 1.62;
   }
 
   .project-gallery-controls {
