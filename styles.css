@@ -263,6 +263,10 @@ textarea {
   max-width: 42rem;
   margin: 0;
   color: rgba(17, 19, 21, 0.82);
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  text-align: justify;
+  text-align-last: left;
 }
 
 .hero-meta {
@@ -294,6 +298,10 @@ textarea {
   display: grid;
   gap: 12px;
   margin-bottom: 30px;
+}
+
+.works .section-heading {
+  display: none;
 }
 
 .section-heading h2 {
@@ -952,10 +960,6 @@ a.project-row:focus-visible .project-render img {
     padding-right: var(--page-gutter);
   }
 
-  .works .section-heading {
-    display: none;
-  }
-
   .info-bar {
     position: relative;
     right: 0;
@@ -984,6 +988,7 @@ a.project-row:focus-visible .project-render img {
   .lead {
     max-width: none;
     margin: 0;
+    font-size: 0.95rem;
     line-height: 1.58;
   }
 
