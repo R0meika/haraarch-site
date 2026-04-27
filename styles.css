@@ -269,6 +269,14 @@ textarea {
   text-align-last: left;
 }
 
+.lead--tagline {
+  max-width: none;
+  color: var(--text);
+  -webkit-hyphens: manual;
+  hyphens: manual;
+  text-align: left;
+}
+
 .hero-meta {
   display: grid;
   gap: 6px;
@@ -467,6 +475,15 @@ a.project-row:focus-visible .project-render img {
   margin-top: 42px;
   padding: 20px var(--page-gutter) 0;
   color: var(--muted);
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer-note {
+  max-width: 46rem;
+  line-height: 1.58;
 }
 
 .project-page-main {
