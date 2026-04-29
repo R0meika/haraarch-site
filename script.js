@@ -1,3 +1,129 @@
+const projectNavItems = [
+  {
+    href: "kushchevka.html",
+    title: "Частный жилой дом",
+    meta: "350 м² | Ростов-на-Дону",
+    status: "В реализации",
+  },
+  {
+    href: "voronezh.html",
+    title: "Частный жилой дом",
+    meta: "150 м² | Воронеж",
+    status: "В реализации",
+  },
+  {
+    href: "sydney-city.html",
+    title: "Квартира ЖК Сидней Сити",
+    meta: "65 м² | Москва",
+    status: "В разработке",
+  },
+  {
+    href: "dacha-shale.html",
+    title: "Загородный дом",
+    meta: "200 м² | Истра",
+    status: "В разработке",
+  },
+  {
+    href: "dom.html",
+    title: "Эскизный проект дома",
+    meta: "170 м² | Московская область",
+    status: "В реализации",
+  },
+  {
+    href: "almaty-reconstruction.html",
+    title: "Реконструкция кафе",
+    meta: "140 м² | Алматы",
+    status: "В разработке",
+  },
+];
+
+const buildProjectIndex = () => {
+  const projectMain = document.querySelector(".project-page-main");
+  const shell = document.querySelector(".site-shell");
+
+  if (!projectMain || !shell) {
+    return;
+  }
+
+  document.body.classList.add("has-project-index");
+
+  const currentFile = window.location.pathname.split("/").pop() || "";
+  const projectIndex = document.createElement("aside");
+  projectIndex.className = "project-index";
+  projectIndex.setAttribute("aria-label", "Навигация по проектам");
+  projectIndex.innerHTML = `
+    <div class="project-index-block project-index-block--primary">
+      <nav class="project-index-list">
+        ${projectNavItems
+          .map((item) => {
+            const isCurrent = item.href === currentFile;
+            return `
+              <a class="project-index-link${isCurrent ? " is-current" : ""}" href="${item.href}"${isCurrent ? ' aria-current="page"' : ""}>
+                <span>
+                  ${item.title}
+                  <small>${item.meta} | ${item.status}</small>
+                </span>
+              </a>
+            `;
+          })
+          .join("")}
+      </nav>
+    </div>
+    <nav class="project-index-block project-index-menu" aria-label="Разделы бюро">
+      <a href="../index.html#works">Все проекты</a>
+      <a href="#practice">Практика</a>
+      <a href="../index.html#contact">Контакт</a>
+    </nav>
+  `;
+
+  shell.insertBefore(projectIndex, projectMain);
+
+  const list = projectIndex.querySelector(".project-index-list");
+  const currentLink = projectIndex.querySelector(".project-index-link.is-current");
+
+  if (list && currentLink) {
+    const centerCurrentProject = () => {
+      list.scrollLeft = currentLink.offsetLeft - (list.clientWidth - currentLink.clientWidth) / 2;
+    };
+
+    window.requestAnimationFrame(centerCurrentProject);
+    window.addEventListener("load", centerCurrentProject, { once: true });
+  }
+};
+
+const buildPracticePanel = () => {
+  const projectMain = document.querySelector(".project-page-main");
+  const footer = document.querySelector(".footer");
+
+  if (!projectMain || !footer || document.querySelector(".practice-panel")) {
+    return;
+  }
+
+  const panel = document.createElement("section");
+  panel.className = "practice-panel";
+  panel.id = "practice";
+  panel.setAttribute("aria-label", "Информация о практике");
+  panel.innerHTML = `
+    <div>
+      <p class="practice-panel-label">Практика</p>
+      <p>ХАРА работает с частными домами, жилыми интерьерами и камерными общественными пространствами.</p>
+    </div>
+    <div>
+      <p class="practice-panel-label">Подход</p>
+      <p>В основе проекта - пропорция, ясная структура, свет и сдержанная материальность.</p>
+    </div>
+    <div>
+      <p class="practice-panel-label">Контакт</p>
+      <p>Москва<br><a href="tel:+79281181850">+7 928 118 18 50</a></p>
+    </div>
+  `;
+
+  footer.parentNode.insertBefore(panel, footer);
+};
+
+buildProjectIndex();
+buildPracticePanel();
+
 const revealItems = document.querySelectorAll(".reveal");
 
 if ("IntersectionObserver" in window) {
@@ -34,16 +160,70 @@ const syncStickyHeights = () => {
   root.style.setProperty("--info-bar-height", `${infoBar?.offsetHeight || 0}px`);
 };
 
+let stickyHeightsFrame = null;
+
+const queueStickyHeights = () => {
+  if (stickyHeightsFrame !== null) {
+    return;
+  }
+
+  stickyHeightsFrame = window.requestAnimationFrame(() => {
+    stickyHeightsFrame = null;
+    syncStickyHeights();
+  });
+};
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const lerp = (start, end, progress) => start + (end - start) * progress;
+const easeScrollProgress = (progress) => progress * progress * (3 - 2 * progress);
+
+const resetMobileTopbarVars = () => {
+  if (!topbar) {
+    return;
+  }
+
+  [
+    "--topbar-progress",
+    "--topbar-brand-size",
+    "--topbar-brand-scale-x",
+    "--topbar-brand-line-height",
+    "--topbar-padding-top",
+    "--topbar-padding-bottom",
+    "--topbar-gap",
+    "--topbar-bg-alpha",
+  ].forEach((property) => topbar.style.removeProperty(property));
+};
+
 const syncTopbarState = () => {
   if (!topbar) {
     return;
   }
 
-  const changed = topbar.classList.toggle("is-compact", window.scrollY > 28);
+  const isMobile = window.matchMedia("(max-width: 760px)").matches;
 
-  if (changed) {
-    window.requestAnimationFrame(syncStickyHeights);
+  if (!isMobile) {
+    topbar.classList.toggle("is-compact", window.scrollY > 28);
+    resetMobileTopbarVars();
+    queueStickyHeights();
+    return;
   }
+
+  const rawProgress = clamp((window.scrollY - 8) / 130, 0, 1);
+  const progress = easeScrollProgress(rawProgress);
+  const viewportWidth = Math.min(window.innerWidth || 375, document.documentElement.clientWidth || 375);
+  const startSize = clamp(viewportWidth * 0.082, 30, 36);
+  const endSize = clamp(viewportWidth * 0.19, 64, 80);
+
+  topbar.classList.toggle("is-compact", progress > 0.98);
+  topbar.style.setProperty("--topbar-progress", progress.toFixed(4));
+  topbar.style.setProperty("--topbar-brand-size", `${lerp(startSize, endSize, progress).toFixed(2)}px`);
+  topbar.style.setProperty("--topbar-brand-scale-x", lerp(1, 1.14, progress).toFixed(4));
+  topbar.style.setProperty("--topbar-brand-line-height", lerp(0.9, 0.8, progress).toFixed(4));
+  topbar.style.setProperty("--topbar-padding-top", `${lerp(12, 6, progress).toFixed(2)}px`);
+  topbar.style.setProperty("--topbar-padding-bottom", `${lerp(10, 7, progress).toFixed(2)}px`);
+  topbar.style.setProperty("--topbar-gap", `${lerp(5, 0, progress).toFixed(2)}px`);
+  topbar.style.setProperty("--topbar-bg-alpha", lerp(0.62, 0.86, progress).toFixed(3));
+  queueStickyHeights();
 };
 
 const classifyGalleryItems = () => {
