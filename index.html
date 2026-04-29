@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Manrope:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap"
     rel="stylesheet"
   >
   <link rel="stylesheet" href="styles.css">
@@ -36,33 +36,6 @@
     </header>
 
     <main id="home">
-      <section class="hero section">
-        <h1 class="reveal">
-            <span class="brand-word">ХАРА<span class="accent-mark" aria-hidden="true"></span></span>
-            Частная архитектура и интерьеры.
-          </h1>
-      </section>
-
-      <section class="info-bar" aria-label="Краткая информация о студии">
-        <div class="info-bar-grid">
-          <p class="lead lead--tagline">
-            <span class="brand-word">ХАРА<span class="accent-mark" aria-hidden="true"></span></span> | архитектурная и интерьерная практика
-          </p>
-
-          <div class="hero-meta">
-            <p>Частные дома</p>
-            <p>Интерьеры</p>
-            <p>Предметный дизайн</p>
-          </div>
-
-          <div class="info-contact">
-            <p class="info-label">Контакт</p>
-            <p>Москва</p>
-            <p><a href="tel:+79281181850">+7 928 118 18 50</a></p>
-          </div>
-        </div>
-      </section>
-
       <section class="works section">
         <div class="section-heading reveal">
           <p class="eyebrow">Проекты</p>
@@ -74,7 +47,13 @@
             <span class="project-number">01</span>
             <h3 id="works">Частный жилой дом</h3>
             <div class="project-copy">
-              <p class="project-meta">350 м² | г. Ростов-на-Дону, Россия | В реализации</p>
+              <ul class="project-details" aria-label="Информация о проекте">
+                <li><span>Тип</span> Частный жилой дом</li>
+                <li><span>Площадь</span> 350 м²</li>
+                <li><span>Локация</span> Ростов-на-Дону</li>
+                <li><span>Статус</span> В реализации</li>
+              </ul>
+              <p class="project-note">Камерный интерьер с плотной графичной палитрой: темное дерево, серый камень, скрытый свет и отдельные контрастные акценты.</p>
             </div>
             <div class="project-render" aria-hidden="true">
               <img src="assets/previews/home-kushchevka.webp" alt="" decoding="async" fetchpriority="high">
@@ -88,7 +67,13 @@
             <span class="project-number">02</span>
             <h3>Частный жилой дом</h3>
             <div class="project-copy">
-              <p class="project-meta">150 м² | г. Воронеж, Россия | В реализации</p>
+              <ul class="project-details" aria-label="Информация о проекте">
+                <li><span>Тип</span> Частный жилой дом</li>
+                <li><span>Площадь</span> 150 м²</li>
+                <li><span>Локация</span> Воронеж</li>
+                <li><span>Статус</span> В реализации</li>
+              </ul>
+              <p class="project-note">Теплое дерево, спокойные светлые плоскости и мягкий рассеянный свет без декоративной перегрузки.</p>
             </div>
             <div class="project-render" aria-hidden="true">
               <img src="assets/previews/home-voronezh.webp" alt="" loading="lazy" decoding="async">
@@ -102,7 +87,13 @@
             <span class="project-number">03</span>
             <h3>Квартира ЖК Сидней Сити</h3>
             <div class="project-copy">
-              <p class="project-meta">65 м² | г. Москва, Россия | В разработке</p>
+              <ul class="project-details" aria-label="Информация о проекте">
+                <li><span>Тип</span> Квартира</li>
+                <li><span>Площадь</span> 65 м²</li>
+                <li><span>Локация</span> Москва</li>
+                <li><span>Статус</span> В разработке</li>
+              </ul>
+              <p class="project-note">Цельное open-space пространство с чистыми плоскостями, встроенным хранением и спокойной градацией теплых серых оттенков.</p>
             </div>
             <div class="project-render" aria-hidden="true">
               <img src="assets/previews/home-sydney-city.webp" alt="" loading="lazy" decoding="async">
@@ -116,7 +107,13 @@
             <span class="project-number">04</span>
             <h3>Загородный дом</h3>
             <div class="project-copy">
-              <p class="project-meta">200 м² | г. Истра, Подмосковье, Россия | В разработке</p>
+              <ul class="project-details" aria-label="Информация о проекте">
+                <li><span>Тип</span> Загородный дом</li>
+                <li><span>Площадь</span> 200 м²</li>
+                <li><span>Локация</span> Истра</li>
+                <li><span>Статус</span> В разработке</li>
+              </ul>
+              <p class="project-note">Современная подача шале: выразительная деревянная конструкция, светлые плоскости, низкая мебель и спокойная обеденная группа.</p>
             </div>
             <div class="project-render" aria-hidden="true">
               <img src="assets/previews/home-dacha-shale.webp" alt="" loading="lazy" decoding="async">
@@ -130,7 +127,13 @@
             <span class="project-number">05</span>
             <h3>Эскизный проект дома</h3>
             <div class="project-copy">
-              <p class="project-meta">170 м² | Московская область, Россия | В реализации</p>
+              <ul class="project-details" aria-label="Информация о проекте">
+                <li><span>Тип</span> Частный дом</li>
+                <li><span>Площадь</span> 170 м²</li>
+                <li><span>Локация</span> Московская область</li>
+                <li><span>Статус</span> В реализации</li>
+              </ul>
+              <p class="project-note">Компактный двухэтажный объем со сдержанной пластикой фасада, крупными проемами и ясной архитектурной логикой.</p>
             </div>
             <div class="project-render" aria-hidden="true">
               <img src="assets/previews/home-dom.webp" alt="" loading="lazy" decoding="async">
@@ -144,7 +147,13 @@
             <span class="project-number">06</span>
             <h3>Реконструкция кафе</h3>
             <div class="project-copy">
-              <p class="project-meta">140 м² | г. Алматы, Казахстан | В разработке</p>
+              <ul class="project-details" aria-label="Информация о проекте">
+                <li><span>Тип</span> Общественное пространство</li>
+                <li><span>Площадь</span> 140 м²</li>
+                <li><span>Локация</span> Алматы</li>
+                <li><span>Статус</span> В разработке</li>
+              </ul>
+              <p class="project-note">Реконструкция углового здания с более строгой композицией: светлая штукатурка, черный металл, витражи и периметральная терраса.</p>
             </div>
             <div class="project-render" aria-hidden="true">
               <img src="assets/previews/home-almaty-reconstruction.webp" alt="" loading="lazy" decoding="async">
