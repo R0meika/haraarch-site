@@ -37,6 +37,189 @@ body {
   background: var(--bg);
 }
 
+body.hara-intro-active {
+  overflow: hidden;
+}
+
+.hara-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 5vw, 64px);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.hara-intro.is-exiting {
+  pointer-events: none;
+  animation: intro-fade-out 700ms ease forwards;
+}
+
+.hara-intro-drawing {
+  width: min(82vw, 900px);
+  max-height: min(76vh, 620px);
+  overflow: visible;
+}
+
+.intro-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.15;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  vector-effect: non-scaling-stroke;
+  animation: intro-draw 720ms ease forwards;
+}
+
+.intro-mark-content {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: intro-mark-in 420ms ease forwards;
+}
+
+.intro-mark circle {
+  fill: #ffffff;
+  stroke: currentColor;
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
+}
+
+.intro-mark text,
+.intro-caption {
+  fill: currentColor;
+  font-family: "Manrope", sans-serif;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.intro-mark text {
+  font-size: 34px;
+  font-weight: 400;
+}
+
+.intro-caption {
+  opacity: 0;
+  font-size: 21px;
+  letter-spacing: 0;
+  animation: intro-caption-in 480ms ease forwards;
+}
+
+.intro-delay-1 {
+  animation-delay: 120ms;
+}
+
+.intro-delay-2 {
+  animation-delay: 240ms;
+}
+
+.intro-delay-3 {
+  animation-delay: 360ms;
+}
+
+.intro-delay-4 {
+  animation-delay: 480ms;
+}
+
+.intro-delay-5 {
+  animation-delay: 700ms;
+}
+
+.intro-delay-6 {
+  animation-delay: 820ms;
+}
+
+.intro-delay-7 {
+  animation-delay: 940ms;
+}
+
+.intro-delay-8 {
+  animation-delay: 1060ms;
+}
+
+.intro-delay-9 {
+  animation-delay: 1280ms;
+}
+
+.intro-delay-10 {
+  animation-delay: 1370ms;
+}
+
+.intro-delay-11 {
+  animation-delay: 1460ms;
+}
+
+.intro-delay-12 {
+  animation-delay: 1550ms;
+}
+
+.intro-delay-13 {
+  animation-delay: 1800ms;
+}
+
+.intro-delay-14 {
+  animation-delay: 1960ms;
+}
+
+.intro-delay-15 {
+  animation-delay: 2140ms;
+}
+
+.intro-delay-16 {
+  animation-delay: 2380ms;
+}
+
+.intro-delay-17 {
+  animation-delay: 2470ms;
+}
+
+.intro-delay-18 {
+  animation-delay: 2560ms;
+}
+
+.intro-delay-19 {
+  animation-delay: 2650ms;
+}
+
+@keyframes intro-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes intro-mark-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes intro-caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-fade-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -1144,6 +1327,23 @@ a.project-row:focus-visible .project-render img {
     --fs-display: 3.15rem;
   }
 
+  .hara-intro {
+    padding: 22px;
+  }
+
+  .hara-intro-drawing {
+    width: min(94vw, 430px);
+    max-height: 82vh;
+  }
+
+  .intro-mark text {
+    font-size: 25px;
+  }
+
+  .intro-caption {
+    font-size: 16px;
+  }
+
   .site-shell {
     padding: 0 0 calc(64px + env(safe-area-inset-bottom));
   }
@@ -1443,5 +1643,12 @@ a.project-row:focus-visible .project-render img {
   .reveal {
     opacity: 1;
     transform: none;
+  }
+
+  .intro-line,
+  .intro-mark-content,
+  .intro-caption,
+  .hara-intro.is-exiting {
+    animation-duration: 1ms;
   }
 }

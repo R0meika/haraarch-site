@@ -37,6 +37,220 @@ const projectNavItems = [
   },
 ];
 
+const buildIntroOverlay = () => {
+  const isHomePage = Boolean(document.getElementById("home")) && !document.querySelector(".project-page-main");
+  const params = new URLSearchParams(window.location.search);
+  const forceIntro = params.get("intro") === "1";
+  const skipIntro = params.get("intro") === "0";
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const storageKey = "haraIntroSeen";
+  let introSeen = false;
+
+  try {
+    introSeen = sessionStorage.getItem(storageKey) === "true";
+  } catch (error) {
+    introSeen = false;
+  }
+
+  if (!isHomePage || skipIntro || (!forceIntro && (reducedMotion || introSeen))) {
+    return;
+  }
+
+  const intro = document.createElement("div");
+  intro.className = "hara-intro";
+  intro.setAttribute("aria-hidden", "true");
+  const isCompactIntro = window.matchMedia("(max-width: 760px)").matches;
+  const desktopDrawing = `
+    <svg class="hara-intro-drawing" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" role="img" aria-label="ХАРА">
+      <g class="intro-grid">
+        <line class="intro-line intro-h intro-delay-1" x1="190" y1="120" x2="850" y2="120" pathLength="1" />
+        <line class="intro-line intro-h intro-delay-2" x1="190" y1="220" x2="850" y2="220" pathLength="1" />
+        <line class="intro-line intro-h intro-delay-3" x1="190" y1="320" x2="850" y2="320" pathLength="1" />
+        <line class="intro-line intro-h intro-delay-4" x1="190" y1="420" x2="850" y2="420" pathLength="1" />
+
+        <line class="intro-line intro-v intro-delay-5" x1="300" y1="72" x2="300" y2="460" pathLength="1" />
+        <line class="intro-line intro-v intro-delay-6" x1="450" y1="72" x2="450" y2="460" pathLength="1" />
+        <line class="intro-line intro-v intro-delay-7" x1="600" y1="72" x2="600" y2="460" pathLength="1" />
+        <line class="intro-line intro-v intro-delay-8" x1="750" y1="72" x2="750" y2="460" pathLength="1" />
+      </g>
+
+      <g class="intro-left-marks">
+        <g class="intro-mark" transform="translate(124 120)">
+          <g class="intro-mark-content intro-delay-9">
+            <circle r="32" />
+            <text y="10">А'</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(124 220)">
+          <g class="intro-mark-content intro-delay-10">
+            <circle r="32" />
+            <text y="10">Р</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(124 320)">
+          <g class="intro-mark-content intro-delay-11">
+            <circle r="32" />
+            <text y="10">А</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(124 420)">
+          <g class="intro-mark-content intro-delay-12">
+            <circle r="32" />
+            <text y="10">Х</text>
+          </g>
+        </g>
+      </g>
+
+      <g class="intro-dimension">
+        <line class="intro-line intro-dim intro-delay-13" x1="300" y1="482" x2="750" y2="482" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-13" x1="300" y1="458" x2="300" y2="508" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-13" x1="750" y1="458" x2="750" y2="508" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-14" x1="286" y1="496" x2="314" y2="468" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-14" x1="736" y1="496" x2="764" y2="468" pathLength="1" />
+        <text class="intro-caption intro-delay-15" x="525" y="475">Архитектурная и дизайн-практика</text>
+      </g>
+
+      <g class="intro-bottom-marks">
+        <g class="intro-mark" transform="translate(300 560)">
+          <g class="intro-mark-content intro-delay-16">
+            <circle r="32" />
+            <text y="10">Х</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(450 560)">
+          <g class="intro-mark-content intro-delay-17">
+            <circle r="32" />
+            <text y="10">А</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(600 560)">
+          <g class="intro-mark-content intro-delay-18">
+            <circle r="32" />
+            <text y="10">Р</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(750 560)">
+          <g class="intro-mark-content intro-delay-19">
+            <circle r="32" />
+            <text y="10">А'</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+  `;
+
+  const mobileDrawing = `
+    <svg class="hara-intro-drawing" viewBox="0 0 430 720" preserveAspectRatio="xMidYMid meet" role="img" aria-label="ХАРА">
+      <g class="intro-grid">
+        <line class="intro-line intro-h intro-delay-1" x1="94" y1="150" x2="396" y2="150" pathLength="1" />
+        <line class="intro-line intro-h intro-delay-2" x1="94" y1="250" x2="396" y2="250" pathLength="1" />
+        <line class="intro-line intro-h intro-delay-3" x1="94" y1="350" x2="396" y2="350" pathLength="1" />
+        <line class="intro-line intro-h intro-delay-4" x1="94" y1="450" x2="396" y2="450" pathLength="1" />
+
+        <line class="intro-line intro-v intro-delay-5" x1="145" y1="98" x2="145" y2="490" pathLength="1" />
+        <line class="intro-line intro-v intro-delay-6" x1="225" y1="98" x2="225" y2="490" pathLength="1" />
+        <line class="intro-line intro-v intro-delay-7" x1="305" y1="98" x2="305" y2="490" pathLength="1" />
+        <line class="intro-line intro-v intro-delay-8" x1="385" y1="98" x2="385" y2="490" pathLength="1" />
+      </g>
+
+      <g class="intro-left-marks">
+        <g class="intro-mark" transform="translate(58 150)">
+          <g class="intro-mark-content intro-delay-9">
+            <circle r="25" />
+            <text y="8">А'</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(58 250)">
+          <g class="intro-mark-content intro-delay-10">
+            <circle r="25" />
+            <text y="8">Р</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(58 350)">
+          <g class="intro-mark-content intro-delay-11">
+            <circle r="25" />
+            <text y="8">А</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(58 450)">
+          <g class="intro-mark-content intro-delay-12">
+            <circle r="25" />
+            <text y="8">Х</text>
+          </g>
+        </g>
+      </g>
+
+      <g class="intro-dimension">
+        <line class="intro-line intro-dim intro-delay-13" x1="145" y1="528" x2="385" y2="528" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-13" x1="145" y1="502" x2="145" y2="554" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-13" x1="385" y1="502" x2="385" y2="554" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-14" x1="132" y1="541" x2="158" y2="515" pathLength="1" />
+        <line class="intro-line intro-dim intro-delay-14" x1="372" y1="541" x2="398" y2="515" pathLength="1" />
+        <text class="intro-caption intro-delay-15" x="265" y="519" textLength="226" lengthAdjust="spacingAndGlyphs">Архитектурная и дизайн-практика</text>
+      </g>
+
+      <g class="intro-bottom-marks">
+        <g class="intro-mark" transform="translate(145 630)">
+          <g class="intro-mark-content intro-delay-16">
+            <circle r="25" />
+            <text y="8">Х</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(225 630)">
+          <g class="intro-mark-content intro-delay-17">
+            <circle r="25" />
+            <text y="8">А</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(305 630)">
+          <g class="intro-mark-content intro-delay-18">
+            <circle r="25" />
+            <text y="8">Р</text>
+          </g>
+        </g>
+        <g class="intro-mark" transform="translate(385 630)">
+          <g class="intro-mark-content intro-delay-19">
+            <circle r="25" />
+            <text y="8">А'</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+  `;
+  intro.innerHTML = isCompactIntro ? mobileDrawing : desktopDrawing;
+
+  document.body.classList.add("hara-intro-active");
+  document.body.append(intro);
+
+  let isClosed = false;
+  let closeTimer = null;
+  let removeTimer = null;
+
+  const closeIntro = () => {
+    if (isClosed) {
+      return;
+    }
+
+    isClosed = true;
+    window.clearTimeout(closeTimer);
+    window.clearTimeout(removeTimer);
+    try {
+      sessionStorage.setItem(storageKey, "true");
+    } catch (error) {
+      // Private browsing or locked storage should not block the site.
+    }
+    intro.classList.add("is-exiting");
+    document.body.classList.remove("hara-intro-active");
+    removeTimer = window.setTimeout(() => intro.remove(), 720);
+  };
+
+  closeTimer = window.setTimeout(closeIntro, 4300);
+  intro.addEventListener("pointerdown", closeIntro);
+  window.addEventListener("keydown", closeIntro, { once: true });
+  window.addEventListener("wheel", closeIntro, { once: true, passive: true });
+  window.addEventListener("touchmove", closeIntro, { once: true, passive: true });
+};
+
 const buildProjectIndex = () => {
   const projectMain = document.querySelector(".project-page-main");
   const shell = document.querySelector(".site-shell");
@@ -165,6 +379,7 @@ const buildPracticePanel = () => {
   footer.parentNode.insertBefore(panel, footer);
 };
 
+buildIntroOverlay();
 buildMobileServiceNav();
 buildProjectIndex();
 buildPracticePanel();
