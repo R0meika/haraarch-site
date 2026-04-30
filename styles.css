@@ -45,11 +45,10 @@ body.hara-intro-active {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: grid;
-  place-items: center;
   padding: clamp(24px, 5vw, 64px);
   background: #ffffff;
   color: var(--text);
+  cursor: pointer;
 }
 
 .hara-intro.is-exiting {
@@ -58,19 +57,50 @@ body.hara-intro-active {
 }
 
 .hara-intro-drawing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: min(82vw, 900px);
   max-height: min(76vh, 620px);
   overflow: visible;
+  transform: translate(-50%, -50%);
+}
+
+.intro-composition {
+  animation: intro-composition-out 780ms ease forwards;
+  animation-delay: 4800ms;
 }
 
 .intro-line {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.15;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
+  opacity: 0;
   vector-effect: non-scaling-stroke;
-  animation: intro-draw 720ms ease forwards;
+  animation: intro-line-in 680ms ease forwards;
+  transform-box: fill-box;
+}
+
+.intro-axis {
+  stroke-dasharray: 42 16 1 16;
+  stroke-linecap: round;
+}
+
+.intro-h,
+.intro-dim-main {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.intro-v,
+.intro-dim-vertical {
+  transform: scaleY(0);
+  transform-origin: center top;
+}
+
+.intro-dim-tick {
+  transform: scale(0);
+  transform-origin: center;
 }
 
 .intro-mark-content {
@@ -80,7 +110,15 @@ body.hara-intro-active {
   animation: intro-mark-in 420ms ease forwards;
 }
 
-.intro-mark circle {
+.intro-axis-bubble {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: intro-mark-in 420ms ease forwards;
+}
+
+.intro-mark circle,
+.intro-axis-bubble {
   fill: #ffffff;
   stroke: currentColor;
   stroke-width: 1.1;
@@ -92,7 +130,7 @@ body.hara-intro-active {
   fill: currentColor;
   font-family: "Manrope", sans-serif;
   text-anchor: middle;
-  dominant-baseline: middle;
+  dominant-baseline: central;
 }
 
 .intro-mark text {
@@ -100,11 +138,91 @@ body.hara-intro-active {
   font-weight: 400;
 }
 
+.intro-brand-letter {
+  opacity: 0;
+  animation: intro-letter-in 360ms ease forwards;
+}
+
+.intro-caption-mask {
+  fill: #ffffff;
+  opacity: 0;
+  animation: intro-mask-in 300ms ease forwards;
+}
+
 .intro-caption {
   opacity: 0;
-  font-size: 21px;
+  font-size: 19px;
   letter-spacing: 0;
   animation: intro-caption-in 480ms ease forwards;
+}
+
+.intro-final {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(90vw, 820px);
+  opacity: 0;
+  text-align: center;
+  transform: translate(-50%, calc(-50% + 16px));
+  animation: intro-final-in 680ms ease forwards;
+  animation-delay: 5200ms;
+}
+
+.intro-final p {
+  margin: 0;
+}
+
+.intro-final-brand {
+  font-size: clamp(4.5rem, 9vw, 8rem);
+  font-weight: 600;
+  line-height: 0.86;
+}
+
+.intro-final-practice {
+  margin-top: clamp(16px, 2.1vw, 24px);
+  color: var(--text);
+  font-size: clamp(1rem, 1.25vw, 1.28rem);
+  line-height: 1.25;
+}
+
+.intro-final-greek {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: clamp(1.12rem, 1.6vw, 1.55rem);
+  line-height: 1.2;
+}
+
+.intro-enter {
+  position: fixed;
+  top: clamp(20px, 3vw, 38px);
+  right: clamp(22px, 3vw, 42px);
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  animation: intro-enter-in 480ms ease forwards;
+  animation-delay: 5600ms;
+}
+
+.intro-enter::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 160ms ease;
+}
+
+.intro-enter:hover::after,
+.intro-enter:focus-visible::after {
+  transform: scaleX(1);
 }
 
 .intro-delay-1 {
@@ -183,9 +301,18 @@ body.hara-intro-active {
   animation-delay: 2650ms;
 }
 
-@keyframes intro-draw {
+.intro-delay-20 {
+  animation-delay: 2940ms;
+}
+
+.intro-delay-21 {
+  animation-delay: 3240ms;
+}
+
+@keyframes intro-line-in {
   to {
-    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -201,6 +328,24 @@ body.hara-intro-active {
   }
 }
 
+@keyframes intro-letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes intro-mask-in {
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes intro-caption-in {
   from {
     opacity: 0;
@@ -210,6 +355,26 @@ body.hara-intro-active {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes intro-composition-out {
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+@keyframes intro-final-in {
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes intro-enter-in {
+  to {
+    opacity: 1;
   }
 }
 
@@ -1344,6 +1509,29 @@ a.project-row:focus-visible .project-render img {
     font-size: 16px;
   }
 
+  .intro-final {
+    width: calc(100vw - 36px);
+  }
+
+  .intro-final-brand {
+    font-size: clamp(3.6rem, 18vw, 5.4rem);
+  }
+
+  .intro-final-practice {
+    margin-top: 14px;
+    font-size: 0.98rem;
+  }
+
+  .intro-final-greek {
+    margin-top: 9px;
+    font-size: 1.12rem;
+  }
+
+  .intro-enter {
+    top: max(18px, env(safe-area-inset-top));
+    right: 18px;
+  }
+
   .site-shell {
     padding: 0 0 calc(64px + env(safe-area-inset-bottom));
   }
@@ -1647,8 +1835,29 @@ a.project-row:focus-visible .project-render img {
 
   .intro-line,
   .intro-mark-content,
+  .intro-axis-bubble,
+  .intro-brand-letter,
+  .intro-caption-mask,
   .intro-caption,
+  .intro-composition,
+  .intro-final,
+  .intro-enter,
   .hara-intro.is-exiting {
     animation-duration: 1ms;
+  }
+
+  .hara-intro.is-reduced .intro-composition {
+    display: none;
+  }
+
+  .hara-intro.is-reduced .intro-final,
+  .hara-intro.is-reduced .intro-enter {
+    opacity: 1;
+    animation: none;
+    transform: translate(-50%, -50%);
+  }
+
+  .hara-intro.is-reduced .intro-enter {
+    transform: none;
   }
 }
