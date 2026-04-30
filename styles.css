@@ -264,9 +264,9 @@ textarea {
   max-width: 42rem;
   margin: 0;
   color: rgba(17, 19, 21, 0.82);
-  -webkit-hyphens: auto;
-  hyphens: auto;
-  text-align: justify;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+  text-align: left;
   text-align-last: left;
 }
 
@@ -395,9 +395,9 @@ a.project-row:focus-visible {
 
 .project-details {
   display: grid;
-  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
   padding: 0;
-  border-top: 1px solid rgba(17, 19, 21, 0.18);
   list-style: none;
   color: var(--muted);
   font-size: clamp(0.9rem, 0.84rem + 0.16vw, 0.98rem);
@@ -406,8 +406,6 @@ a.project-row:focus-visible {
 
 .project-details li {
   display: block;
-  padding: 9px 0 10px;
-  border-bottom: 1px solid rgba(17, 19, 21, 0.18);
 }
 
 .project-details span {
@@ -498,7 +496,7 @@ a.project-row:focus-visible .project-render img {
   }
 
   .has-project-index .project-page-grid {
-    padding-top: 38px;
+    padding-top: 14px;
   }
 
   .has-project-index .project-gallery {
@@ -536,14 +534,8 @@ a.project-row:focus-visible .project-render img {
 
   .project-index-link {
     display: block;
-    padding: 10px 0 11px;
-    border-top: 1px solid rgba(17, 19, 21, 0.18);
     color: rgba(17, 19, 21, 0.38);
     line-height: 1.2;
-  }
-
-  .project-index-link:last-child {
-    border-bottom: 1px solid rgba(17, 19, 21, 0.18);
   }
 
   .project-index-link small {
@@ -717,15 +709,13 @@ a.project-row:focus-visible .project-render img {
 .project-facts {
   grid-column: 8 / span 4;
   display: grid;
-  gap: 0;
-  border-top: 1px solid rgba(17, 19, 21, 0.18);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
 }
 
 .project-facts p {
   display: block;
   margin: 0;
-  padding: 9px 0 10px;
-  border-bottom: 1px solid rgba(17, 19, 21, 0.18);
   line-height: 1.48;
   color: var(--muted);
 }
@@ -1083,8 +1073,7 @@ a.project-row:focus-visible .project-render img {
   .project-switcher {
     display: block;
     margin: 46px var(--page-gutter) 0;
-    padding-top: 18px;
-    border-top: 1px solid rgba(17, 19, 21, 0.18);
+    padding-top: 0;
   }
 
   .project-switcher-title {
@@ -1094,17 +1083,12 @@ a.project-row:focus-visible .project-render img {
 
   .project-switcher-list {
     display: grid;
+    gap: 18px;
   }
 
   .project-switcher-link {
     display: block;
-    padding: 13px 0 14px;
-    border-top: 1px solid rgba(17, 19, 21, 0.18);
     line-height: 1.24;
-  }
-
-  .project-switcher-link:last-child {
-    border-bottom: 1px solid rgba(17, 19, 21, 0.18);
   }
 
   .project-switcher-link small {
