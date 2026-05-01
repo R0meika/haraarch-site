@@ -1586,9 +1586,9 @@ a.project-row:focus-visible .project-render img {
   }
 
   .hara-intro-drawing {
-    top: 47%;
-    width: min(84vw, 370px);
-    max-height: 58vh;
+    top: 45%;
+    width: min(92vw, 396px);
+    max-height: 56vh;
   }
 
   .intro-mark text {
