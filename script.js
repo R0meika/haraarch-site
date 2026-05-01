@@ -58,9 +58,12 @@ const buildIntroOverlay = () => {
 
   const createIntroSvg = (layout) => {
     const greekLetters = ["χ", "α", "ρ", "ά"];
-    const russianLetters = ["Х", "А", "Р", "А'"];
-    const rowDelayBase = 1;
-    const columnDelayBase = 5;
+    const russianLetters = ["Х", "А", "Р", "А"];
+    const rowDelayStart = 90;
+    const columnDelayStart = 900;
+    const rowDelayStep = 160;
+    const columnDelayStep = 170;
+    const axisSegmentStep = 34;
     const greekCircleDelayBase = 9;
     const russianCircleDelayBase = 13;
     const greekLetterDelayBase = 17;
@@ -68,62 +71,65 @@ const buildIntroOverlay = () => {
     const dimensionDelay = 25;
     const captionDelay = 27;
 
-    const line = (className, x1, y1, x2, y2, delay) =>
-      `<line class="intro-line intro-axis ${className} intro-delay-${delay}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
-    const dot = (cx, cy, delay) =>
-      `<circle class="intro-axis-dot intro-delay-${delay}" cx="${cx}" cy="${cy}" r="${layout.dotR}" />`;
-    const segmentedRange = (start, end, fixed, delay, orientation) => {
+    const axisLine = (className, x1, y1, x2, y2, delay) =>
+      `<line class="intro-line intro-axis ${className}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="animation-delay: ${delay}ms" />`;
+    const axisDot = (cx, cy, delay) =>
+      `<circle class="intro-axis-dot" cx="${cx}" cy="${cy}" r="${layout.dotR}" style="animation-delay: ${delay}ms" />`;
+    const makeAxisStepper = (startDelay) => {
+      let step = 0;
+      const nextDelay = () => startDelay + step++ * axisSegmentStep;
+
+      return {
+        line: (className, x1, y1, x2, y2) => axisLine(className, x1, y1, x2, y2, nextDelay()),
+        dot: (cx, cy) => axisDot(cx, cy, nextDelay()),
+      };
+    };
+    const segmentedRange = (start, end, fixed, next, orientation) => {
       const mid = (start + end) / 2;
       const firstEnd = mid - layout.dotGap;
       const secondStart = mid + layout.dotGap;
 
       if (orientation === "h") {
         return [
-          line("intro-h", start, fixed, firstEnd, fixed, delay),
-          dot(mid, fixed, delay),
-          line("intro-h", secondStart, fixed, end, fixed, delay),
+          next.line("intro-h", start, fixed, firstEnd, fixed),
+          next.dot(mid, fixed),
+          next.line("intro-h", secondStart, fixed, end, fixed),
         ].join("");
       }
 
       return [
-        line("intro-v", fixed, start, fixed, firstEnd, delay),
-        dot(fixed, mid, delay),
-        line("intro-v", fixed, secondStart, fixed, end, delay),
+        next.line("intro-v", fixed, start, fixed, firstEnd),
+        next.dot(fixed, mid),
+        next.line("intro-v", fixed, secondStart, fixed, end),
       ].join("");
     };
     const buildHorizontalAxis = (y, index) => {
-      const delay = rowDelayBase + index;
-      const parts = [
-        line("intro-h", layout.leftX, y, layout.cols[0] - layout.nodeArm, y, delay),
-        ...layout.cols.map((x) => line("intro-h intro-axis-node", x - layout.nodeArm, y, x + layout.nodeArm, y, delay)),
-      ];
+      const next = makeAxisStepper(rowDelayStart + index * rowDelayStep);
+      const parts = [next.line("intro-h", layout.leftX, y, layout.cols[0] - layout.nodeArm, y)];
 
-      layout.cols.slice(0, -1).forEach((x, columnIndex) => {
-        parts.push(segmentedRange(x + layout.nodeArm, layout.cols[columnIndex + 1] - layout.nodeArm, y, delay, "h"));
+      layout.cols.forEach((x, columnIndex) => {
+        parts.push(next.line("intro-h intro-axis-node", x - layout.nodeArm, y, x + layout.nodeArm, y));
+
+        if (columnIndex < layout.cols.length - 1) {
+          parts.push(segmentedRange(x + layout.nodeArm, layout.cols[columnIndex + 1] - layout.nodeArm, y, next, "h"));
+        }
       });
-      parts.push(line("intro-h", layout.cols[layout.cols.length - 1] + layout.nodeArm, y, layout.gridEndX, y, delay));
+      parts.push(next.line("intro-h", layout.cols[layout.cols.length - 1] + layout.nodeArm, y, layout.gridEndX, y));
 
       return parts.join("");
     };
     const buildVerticalAxis = (x, index) => {
-      const delay = columnDelayBase + index;
-      const parts = [
-        line("intro-v", x, layout.gridTopY, x, layout.rows[0] - layout.nodeArm, delay),
-        ...layout.rows.map((y) => line("intro-v intro-axis-node", x, y - layout.nodeArm, x, y + layout.nodeArm, delay)),
-      ];
+      const next = makeAxisStepper(columnDelayStart + index * columnDelayStep);
+      const parts = [next.line("intro-v", x, layout.gridTopY, x, layout.rows[0] - layout.nodeArm)];
 
-      layout.rows.slice(0, -1).forEach((y, rowIndex) => {
-        parts.push(segmentedRange(y + layout.nodeArm, layout.rows[rowIndex + 1] - layout.nodeArm, x, delay, "v"));
+      layout.rows.forEach((y, rowIndex) => {
+        parts.push(next.line("intro-v intro-axis-node", x, y - layout.nodeArm, x, y + layout.nodeArm));
+
+        if (rowIndex < layout.rows.length - 1) {
+          parts.push(segmentedRange(y + layout.nodeArm, layout.rows[rowIndex + 1] - layout.nodeArm, x, next, "v"));
+        }
       });
-      const lowerStartY = layout.rows[layout.rows.length - 1] + layout.nodeArm;
-      const crossesCaption = x > layout.captionMaskX && x < layout.captionMaskX + layout.captionMaskWidth;
-
-      if (crossesCaption) {
-        parts.push(line("intro-v", x, lowerStartY, x, layout.captionMaskY - layout.captionClearPad, delay));
-        parts.push(line("intro-v", x, layout.dimY, x, layout.bottomY, delay));
-      } else {
-        parts.push(line("intro-v", x, lowerStartY, x, layout.bottomY, delay));
-      }
+      parts.push(next.line("intro-v", x, layout.rows[layout.rows.length - 1] + layout.nodeArm, x, layout.bottomY));
 
       return parts.join("");
     };
@@ -150,7 +156,7 @@ const buildIntroOverlay = () => {
           index === 3
             ? `
               <text class="intro-brand-letter intro-brand-letter-main intro-delay-${delay}">А</text>
-              <line class="intro-brand-prime-mark intro-delay-${delay}" x1="${layout.primeX1}" y1="${layout.primeY1}" x2="${layout.primeX2}" y2="${layout.primeY2}" />`
+              <line class="intro-brand-prime intro-delay-${delay}" x1="${layout.primeX}" y1="${layout.primeY1}" x2="${layout.primeX}" y2="${layout.primeY2}" />`
             : `<text class="intro-brand-letter intro-delay-${delay}">${russianLetters[index]}</text>`;
 
         return `
@@ -183,7 +189,7 @@ const buildIntroOverlay = () => {
             <line class="intro-line intro-dim intro-dim-vertical intro-delay-${dimensionDelay}" x1="${layout.cols[3]}" y1="${layout.dimY - layout.extension}" x2="${layout.cols[3]}" y2="${layout.dimY + layout.extension}" />
             <line class="intro-line intro-dim intro-dim-tick intro-delay-${dimensionDelay + 1}" x1="${layout.cols[0] - layout.tick}" y1="${layout.dimY + layout.tick}" x2="${layout.cols[0] + layout.tick}" y2="${layout.dimY - layout.tick}" />
             <line class="intro-line intro-dim intro-dim-tick intro-delay-${dimensionDelay + 1}" x1="${layout.cols[3] - layout.tick}" y1="${layout.dimY + layout.tick}" x2="${layout.cols[3] + layout.tick}" y2="${layout.dimY - layout.tick}" />
-            <rect class="intro-caption-mask intro-delay-${captionDelay}" x="${layout.captionMaskX}" y="${layout.captionMaskY}" width="${layout.captionMaskWidth}" height="${layout.captionMaskHeight}" />
+            <rect class="intro-caption-mask intro-delay-${captionDelay - 1}" x="${layout.captionMaskX}" y="${layout.captionMaskY}" width="${layout.captionMaskWidth}" height="${layout.captionMaskHeight}" />
             <text class="intro-caption intro-delay-${captionDelay}" x="${layout.captionX}" y="${layout.captionY}"${layout.captionLength ? ` textLength="${layout.captionLength}" lengthAdjust="spacingAndGlyphs"` : ""}>Архитектурная и дизайн-практика</text>
           </g>
         </g>
@@ -213,17 +219,15 @@ const buildIntroOverlay = () => {
     captionMaskY: 470,
     captionMaskWidth: 346,
     captionMaskHeight: 26,
-    captionClearPad: 9,
     r: 32,
     nodeArm: 22,
     dotGap: 7,
     dotR: 0.85,
     extension: 18,
     tick: 7,
-    primeX1: 11,
-    primeY1: -21,
-    primeX2: 15,
-    primeY2: -9,
+    primeX: 16,
+    primeY1: -29,
+    primeY2: -15,
   };
   const mobileLayout = {
     width: 430,
@@ -242,17 +246,15 @@ const buildIntroOverlay = () => {
     captionMaskY: 277,
     captionMaskWidth: 204,
     captionMaskHeight: 20,
-    captionClearPad: 6,
     r: 18,
     nodeArm: 10,
     dotGap: 4,
     dotR: 0.55,
     extension: 11,
     tick: 4.5,
-    primeX1: 6,
-    primeY1: -14,
-    primeX2: 9,
-    primeY2: -5,
+    primeX: 9,
+    primeY1: -16,
+    primeY2: -8,
   };
 
   intro.innerHTML = `
@@ -263,6 +265,11 @@ const buildIntroOverlay = () => {
           <span class="intro-final-word" aria-hidden="true">ХАРА<span class="intro-final-accent"></span></span>
         </p>
         <p class="intro-final-practice">архитектурная и дизайн-практика</p>
+        <span class="intro-final-measure" aria-hidden="true">
+          <span class="intro-final-measure-line"></span>
+          <span class="intro-final-measure-tick intro-final-measure-tick-left"></span>
+          <span class="intro-final-measure-tick intro-final-measure-tick-right"></span>
+        </span>
         <p class="intro-final-greek">χαρά</p>
       </div>
     </div>

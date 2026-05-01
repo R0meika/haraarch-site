@@ -74,7 +74,7 @@ body.hara-intro-active {
 .intro-line {
   fill: none;
   stroke: currentColor;
-  stroke-width: 0.82;
+  stroke-width: 0.64;
   opacity: 0;
   vector-effect: non-scaling-stroke;
   animation: intro-line-in 520ms ease forwards;
@@ -92,7 +92,7 @@ body.hara-intro-active {
 }
 
 .intro-dim {
-  stroke-width: 0.74;
+  stroke-width: 0.58;
 }
 
 .intro-h,
@@ -165,11 +165,11 @@ body.hara-intro-active {
   text-anchor: middle;
 }
 
-.intro-brand-prime-mark {
+.intro-brand-prime {
   fill: none;
   stroke: currentColor;
-  stroke-linecap: round;
-  stroke-width: 1.1;
+  stroke-linecap: butt;
+  stroke-width: 1;
   vector-effect: non-scaling-stroke;
   opacity: 0;
   animation: intro-letter-in 340ms ease forwards;
@@ -243,8 +243,47 @@ body.hara-intro-active {
   white-space: nowrap;
 }
 
+.intro-final-measure {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 15px;
+  margin: 5px 0 0;
+  color: var(--text);
+}
+
+.intro-final-measure-line {
+  position: absolute;
+  top: 7px;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+}
+
+.intro-final-measure-tick {
+  position: absolute;
+  top: 2px;
+  width: 1px;
+  height: 12px;
+  background: currentColor;
+  opacity: 0;
+  transform: rotate(42deg) scaleY(0.65);
+  transform-origin: center;
+  animation: intro-final-tick-in 320ms ease forwards;
+  animation-delay: 6420ms;
+}
+
+.intro-final-measure-tick-left {
+  left: 0;
+}
+
+.intro-final-measure-tick-right {
+  right: 0;
+}
+
 .intro-final-greek {
-  margin-top: 10px;
+  margin-top: 6px;
   color: var(--muted);
   font-size: clamp(1.12rem, 1.6vw, 1.55rem);
   font-weight: 400;
@@ -458,6 +497,18 @@ body.hara-intro-active {
   to {
     opacity: 1;
     transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes intro-final-tick-in {
+  from {
+    opacity: 0;
+    transform: rotate(42deg) scaleY(0.2);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(42deg) scaleY(1);
   }
 }
 
@@ -1586,7 +1637,7 @@ a.project-row:focus-visible .project-render img {
   }
 
   .hara-intro-drawing {
-    top: 45%;
+    top: calc(50dvh - 50px);
     width: min(92vw, 396px);
     max-height: 56vh;
   }
@@ -1614,8 +1665,22 @@ a.project-row:focus-visible .project-render img {
     font-size: clamp(0.82rem, 3.25vw, 0.96rem);
   }
 
+  .intro-final-measure {
+    height: 12px;
+    margin-top: 4px;
+  }
+
+  .intro-final-measure-line {
+    top: 6px;
+  }
+
+  .intro-final-measure-tick {
+    top: 2px;
+    height: 10px;
+  }
+
   .intro-final-greek {
-    margin-top: 9px;
+    margin-top: 5px;
   }
 
   .intro-enter {
@@ -1930,11 +1995,12 @@ a.project-row:focus-visible .project-render img {
   .intro-axis-bubble,
   .intro-greek-letter,
   .intro-brand-letter,
-  .intro-brand-prime-mark,
+  .intro-brand-prime,
   .intro-caption-mask,
   .intro-caption,
   .intro-composition,
   .intro-final,
+  .intro-final-measure-tick,
   .intro-enter,
   .hara-intro.is-exiting {
     animation-duration: 1ms;
