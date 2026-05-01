@@ -67,19 +67,60 @@ const buildIntroOverlay = () => {
     const dimensionDelay = 19;
     const captionDelay = 21;
 
-    const horizontalAxes = layout.rows
-      .map(
-        (y, index) =>
-          `<line class="intro-line intro-axis intro-h intro-delay-${rowDelayBase + index}" x1="${layout.leftX + layout.r}" y1="${y}" x2="${layout.gridEndX}" y2="${y}" />`
-      )
-      .join("");
+    const line = (className, x1, y1, x2, y2, delay) =>
+      `<line class="intro-line intro-axis ${className} intro-delay-${delay}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
+    const dot = (cx, cy, delay) =>
+      `<circle class="intro-axis-dot intro-delay-${delay}" cx="${cx}" cy="${cy}" r="${layout.dotR}" />`;
+    const segmentedRange = (start, end, fixed, delay, orientation) => {
+      const mid = (start + end) / 2;
+      const firstEnd = mid - layout.dotGap;
+      const secondStart = mid + layout.dotGap;
 
-    const verticalAxes = layout.cols
-      .map(
-        (x, index) =>
-          `<line class="intro-line intro-axis intro-v intro-delay-${columnDelayBase + index}" x1="${x}" y1="${layout.gridTopY}" x2="${x}" y2="${layout.bottomY - layout.r}" />`
-      )
-      .join("");
+      if (orientation === "h") {
+        return [
+          line("intro-h", start, fixed, firstEnd, fixed, delay),
+          dot(mid, fixed, delay),
+          line("intro-h", secondStart, fixed, end, fixed, delay),
+        ].join("");
+      }
+
+      return [
+        line("intro-v", fixed, start, fixed, firstEnd, delay),
+        dot(fixed, mid, delay),
+        line("intro-v", fixed, secondStart, fixed, end, delay),
+      ].join("");
+    };
+    const buildHorizontalAxis = (y, index) => {
+      const delay = rowDelayBase + index;
+      const parts = [
+        line("intro-h", layout.leftX + layout.r, y, layout.cols[0] - layout.nodeArm, y, delay),
+        ...layout.cols.map((x) => line("intro-h intro-axis-node", x - layout.nodeArm, y, x + layout.nodeArm, y, delay)),
+      ];
+
+      layout.cols.slice(0, -1).forEach((x, columnIndex) => {
+        parts.push(segmentedRange(x + layout.nodeArm, layout.cols[columnIndex + 1] - layout.nodeArm, y, delay, "h"));
+      });
+      parts.push(line("intro-h", layout.cols[layout.cols.length - 1] + layout.nodeArm, y, layout.gridEndX, y, delay));
+
+      return parts.join("");
+    };
+    const buildVerticalAxis = (x, index) => {
+      const delay = columnDelayBase + index;
+      const parts = [
+        line("intro-v", x, layout.gridTopY, x, layout.rows[0] - layout.nodeArm, delay),
+        ...layout.rows.map((y) => line("intro-v intro-axis-node", x, y - layout.nodeArm, x, y + layout.nodeArm, delay)),
+      ];
+
+      layout.rows.slice(0, -1).forEach((y, rowIndex) => {
+        parts.push(segmentedRange(y + layout.nodeArm, layout.rows[rowIndex + 1] - layout.nodeArm, x, delay, "v"));
+      });
+      parts.push(line("intro-v", x, layout.rows[layout.rows.length - 1] + layout.nodeArm, x, layout.bottomY - layout.r, delay));
+
+      return parts.join("");
+    };
+
+    const horizontalAxes = layout.rows.map(buildHorizontalAxis).join("");
+    const verticalAxes = layout.cols.map(buildVerticalAxis).join("");
 
     const greekMarks = layout.rows
       .map(
@@ -87,20 +128,28 @@ const buildIntroOverlay = () => {
           <g class="intro-mark intro-greek-mark" transform="translate(${layout.leftX} ${y})">
             <g class="intro-mark-content intro-delay-${greekDelayBase + index}">
               <circle r="${layout.r}" />
-              <text>${greekLetters[index]}</text>
+              <text class="intro-greek-letter intro-greek-letter-${index}">${greekLetters[index]}</text>
             </g>
           </g>`
       )
       .join("");
 
     const russianMarks = layout.cols
-      .map(
-        (x, index) => `
+      .map((x, index) => {
+        const delay = russianDelayBase + index;
+        const letter =
+          index === 3
+            ? `
+              <text class="intro-brand-letter intro-brand-letter-main intro-delay-${delay}">А</text>
+              <line class="intro-brand-prime-mark intro-delay-${delay}" x1="${layout.primeX1}" y1="${layout.primeY1}" x2="${layout.primeX2}" y2="${layout.primeY2}" />`
+            : `<text class="intro-brand-letter intro-delay-${delay}">${russianLetters[index]}</text>`;
+
+        return `
           <g class="intro-mark intro-russian-mark" transform="translate(${x} ${layout.bottomY})">
             <circle class="intro-axis-bubble intro-delay-${bubbleDelay}" r="${layout.r}" />
-            <text class="intro-brand-letter intro-delay-${russianDelayBase + index}">${russianLetters[index]}</text>
-          </g>`
-      )
+            ${letter}
+          </g>`;
+      })
       .join("");
 
     return `
@@ -143,7 +192,7 @@ const buildIntroOverlay = () => {
     height: 650,
     rows: [132, 232, 332, 432],
     cols: [310, 460, 610, 760],
-    leftX: 118,
+    leftX: 168,
     gridTopY: 78,
     gridEndX: 850,
     bottomY: 578,
@@ -156,15 +205,22 @@ const buildIntroOverlay = () => {
     captionMaskWidth: 346,
     captionMaskHeight: 26,
     r: 32,
-    extension: 24,
-    tick: 12,
+    nodeArm: 22,
+    dotGap: 7,
+    dotR: 0.85,
+    extension: 18,
+    tick: 7,
+    primeX1: 11,
+    primeY1: -21,
+    primeX2: 15,
+    primeY2: -9,
   };
   const mobileLayout = {
     width: 430,
     height: 720,
     rows: [150, 250, 350, 450],
     cols: [145, 225, 305, 385],
-    leftX: 58,
+    leftX: 64,
     gridTopY: 98,
     gridEndX: 404,
     bottomY: 630,
@@ -177,16 +233,27 @@ const buildIntroOverlay = () => {
     captionMaskWidth: 230,
     captionMaskHeight: 24,
     r: 25,
-    extension: 22,
-    tick: 9,
+    nodeArm: 14,
+    dotGap: 5,
+    dotR: 0.7,
+    extension: 16,
+    tick: 6,
+    primeX1: 8,
+    primeY1: -17,
+    primeX2: 11,
+    primeY2: -7,
   };
 
   intro.innerHTML = `
     ${createIntroSvg(isCompactIntro ? mobileLayout : desktopLayout)}
     <div class="intro-final" aria-hidden="true">
-      <p class="intro-final-brand">ХАРА'</p>
-      <p class="intro-final-practice">архитектурная и дизайн-практика</p>
-      <p class="intro-final-greek">χαρά</p>
+      <div class="intro-final-lockup">
+        <p class="intro-final-brand" aria-label="ХАРА́">
+          <span class="intro-final-word" aria-hidden="true">ХАРА<span class="intro-final-accent"></span></span>
+        </p>
+        <p class="intro-final-practice">архитектурная и дизайн-практика</p>
+        <p class="intro-final-greek">χαρά</p>
+      </div>
     </div>
     <button class="intro-enter" type="button">Войти</button>
   `;

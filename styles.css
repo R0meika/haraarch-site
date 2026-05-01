@@ -74,7 +74,7 @@ body.hara-intro-active {
 .intro-line {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.15;
+  stroke-width: 0.82;
   opacity: 0;
   vector-effect: non-scaling-stroke;
   animation: intro-line-in 680ms ease forwards;
@@ -82,8 +82,17 @@ body.hara-intro-active {
 }
 
 .intro-axis {
-  stroke-dasharray: 42 16 1 16;
-  stroke-linecap: round;
+  stroke-linecap: butt;
+}
+
+.intro-axis-dot {
+  fill: currentColor;
+  opacity: 0;
+  animation: intro-dot-in 240ms ease forwards;
+}
+
+.intro-dim {
+  stroke-width: 0.74;
 }
 
 .intro-h,
@@ -121,7 +130,7 @@ body.hara-intro-active {
 .intro-axis-bubble {
   fill: #ffffff;
   stroke: currentColor;
-  stroke-width: 1.1;
+  stroke-width: 0.9;
   vector-effect: non-scaling-stroke;
 }
 
@@ -138,7 +147,25 @@ body.hara-intro-active {
   font-weight: 400;
 }
 
+.intro-greek-mark text {
+  font-size: 38px;
+}
+
 .intro-brand-letter {
+  opacity: 0;
+  animation: intro-letter-in 360ms ease forwards;
+}
+
+.intro-brand-letter-main {
+  text-anchor: middle;
+}
+
+.intro-brand-prime-mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
   opacity: 0;
   animation: intro-letter-in 360ms ease forwards;
 }
@@ -160,6 +187,8 @@ body.hara-intro-active {
   position: absolute;
   top: 50%;
   left: 50%;
+  --intro-final-brand-size: clamp(4.5rem, 9vw, 8rem);
+  --intro-final-width: calc(var(--intro-final-brand-size) * 3.18);
   width: min(90vw, 820px);
   opacity: 0;
   text-align: center;
@@ -172,24 +201,49 @@ body.hara-intro-active {
   margin: 0;
 }
 
+.intro-final-lockup {
+  width: min(100%, var(--intro-final-width));
+  margin: 0 auto;
+}
+
 .intro-final-brand {
-  font-size: clamp(4.5rem, 9vw, 8rem);
+  font-size: var(--intro-final-brand-size);
   font-weight: 600;
   line-height: 0.86;
 }
 
+.intro-final-word {
+  position: relative;
+  display: inline-block;
+}
+
+.intro-final-accent {
+  position: absolute;
+  top: -0.045em;
+  right: 0.105em;
+  width: 0.11em;
+  height: 0.034em;
+  background: currentColor;
+  border-radius: 999px;
+  transform: rotate(-58deg);
+  transform-origin: center;
+}
+
 .intro-final-practice {
   margin-top: clamp(16px, 2.1vw, 24px);
+  width: 100%;
   color: var(--text);
   font-size: clamp(1rem, 1.25vw, 1.28rem);
   line-height: 1.25;
+  white-space: nowrap;
 }
 
 .intro-final-greek {
-  margin-top: 10px;
+  margin-top: clamp(14px, 1.8vw, 22px);
   color: var(--muted);
-  font-size: clamp(1.12rem, 1.6vw, 1.55rem);
-  line-height: 1.2;
+  font-size: var(--intro-final-brand-size);
+  font-weight: 400;
+  line-height: 0.86;
 }
 
 .intro-enter {
@@ -325,6 +379,12 @@ body.hara-intro-active {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes intro-dot-in {
+  to {
+    opacity: 1;
   }
 }
 
@@ -1505,26 +1565,27 @@ a.project-row:focus-visible .project-render img {
     font-size: 25px;
   }
 
+  .intro-greek-mark text {
+    font-size: 29px;
+  }
+
   .intro-caption {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .intro-final {
+    --intro-final-brand-size: clamp(3.45rem, 17vw, 5rem);
+    --intro-final-width: calc(var(--intro-final-brand-size) * 3.12);
     width: calc(100vw - 36px);
-  }
-
-  .intro-final-brand {
-    font-size: clamp(3.6rem, 18vw, 5.4rem);
   }
 
   .intro-final-practice {
     margin-top: 14px;
-    font-size: 0.98rem;
+    font-size: clamp(0.82rem, 3.25vw, 0.96rem);
   }
 
   .intro-final-greek {
-    margin-top: 9px;
-    font-size: 1.12rem;
+    margin-top: 13px;
   }
 
   .intro-enter {
@@ -1834,9 +1895,11 @@ a.project-row:focus-visible .project-render img {
   }
 
   .intro-line,
+  .intro-axis-dot,
   .intro-mark-content,
   .intro-axis-bubble,
   .intro-brand-letter,
+  .intro-brand-prime-mark,
   .intro-caption-mask,
   .intro-caption,
   .intro-composition,
