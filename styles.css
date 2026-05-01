@@ -68,7 +68,7 @@ body.hara-intro-active {
 
 .intro-composition {
   animation: intro-composition-out 780ms ease forwards;
-  animation-delay: 5350ms;
+  animation-delay: 6450ms;
 }
 
 .intro-line {
@@ -153,12 +153,12 @@ body.hara-intro-active {
 
 .intro-greek-letter {
   opacity: 0;
-  animation: intro-letter-in 320ms ease forwards;
+  animation: intro-letter-in 460ms ease forwards;
 }
 
 .intro-brand-letter {
   opacity: 0;
-  animation: intro-letter-in 340ms ease forwards;
+  animation: intro-letter-in 480ms ease forwards;
 }
 
 .intro-brand-letter-main {
@@ -172,7 +172,7 @@ body.hara-intro-active {
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
   opacity: 0;
-  animation: intro-letter-in 340ms ease forwards;
+  animation: intro-letter-in 480ms ease forwards;
 }
 
 .intro-caption-mask {
@@ -199,7 +199,7 @@ body.hara-intro-active {
   text-align: center;
   transform: translate(-50%, calc(-50% + 16px));
   animation: intro-final-in 680ms ease forwards;
-  animation-delay: 5750ms;
+  animation-delay: 6850ms;
 }
 
 .intro-final p {
@@ -271,7 +271,7 @@ body.hara-intro-active {
   transform: rotate(42deg) scaleY(0.65);
   transform-origin: center;
   animation: intro-final-tick-in 320ms ease forwards;
-  animation-delay: 6420ms;
+  animation-delay: 7650ms;
 }
 
 .intro-final-measure-tick-left {
@@ -302,7 +302,7 @@ body.hara-intro-active {
   background: transparent;
   cursor: pointer;
   animation: intro-enter-in 480ms ease forwards;
-  animation-delay: 6250ms;
+  animation-delay: 7750ms;
 }
 
 .intro-enter::after {
@@ -356,79 +356,79 @@ body.hara-intro-active {
 }
 
 .intro-delay-9 {
-  animation-delay: 1750ms;
+  animation-delay: 2550ms;
 }
 
 .intro-delay-10 {
-  animation-delay: 1850ms;
+  animation-delay: 2670ms;
 }
 
 .intro-delay-11 {
-  animation-delay: 1950ms;
+  animation-delay: 2790ms;
 }
 
 .intro-delay-12 {
-  animation-delay: 2050ms;
+  animation-delay: 2910ms;
 }
 
 .intro-delay-13 {
-  animation-delay: 2180ms;
+  animation-delay: 3060ms;
 }
 
 .intro-delay-14 {
-  animation-delay: 2280ms;
+  animation-delay: 3180ms;
 }
 
 .intro-delay-15 {
-  animation-delay: 2380ms;
+  animation-delay: 3300ms;
 }
 
 .intro-delay-16 {
-  animation-delay: 2480ms;
+  animation-delay: 3420ms;
 }
 
 .intro-delay-17 {
-  animation-delay: 2700ms;
+  animation-delay: 3600ms;
 }
 
 .intro-delay-18 {
-  animation-delay: 2800ms;
+  animation-delay: 3760ms;
 }
 
 .intro-delay-19 {
-  animation-delay: 2900ms;
-}
-
-.intro-delay-20 {
-  animation-delay: 3000ms;
-}
-
-.intro-delay-21 {
-  animation-delay: 3250ms;
-}
-
-.intro-delay-22 {
-  animation-delay: 3370ms;
-}
-
-.intro-delay-23 {
-  animation-delay: 3490ms;
-}
-
-.intro-delay-24 {
-  animation-delay: 3610ms;
-}
-
-.intro-delay-25 {
   animation-delay: 3920ms;
 }
 
-.intro-delay-26 {
+.intro-delay-20 {
   animation-delay: 4080ms;
 }
 
+.intro-delay-21 {
+  animation-delay: 4300ms;
+}
+
+.intro-delay-22 {
+  animation-delay: 4480ms;
+}
+
+.intro-delay-23 {
+  animation-delay: 4660ms;
+}
+
+.intro-delay-24 {
+  animation-delay: 4840ms;
+}
+
+.intro-delay-25 {
+  animation-delay: 5150ms;
+}
+
+.intro-delay-26 {
+  animation-delay: 5350ms;
+}
+
 .intro-delay-27 {
-  animation-delay: 4320ms;
+  animation-delay: 5550ms;
 }
 
 @keyframes intro-line-in {
@@ -1637,7 +1637,7 @@ a.project-row:focus-visible .project-render img {
   }
 
   .hara-intro-drawing {
-    top: calc(50dvh - 50px);
+    top: calc(50dvh + 22px);
     width: min(92vw, 396px);
     max-height: 56vh;
   }
