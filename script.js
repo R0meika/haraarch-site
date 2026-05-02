@@ -207,10 +207,10 @@ const buildIntroOverlay = () => {
     height: 650,
     rows: [132, 232, 332, 432],
     cols: [310, 460, 610, 760],
-    leftX: 168,
+    leftX: 220,
     gridTopY: 78,
     gridEndX: 850,
-    bottomY: 578,
+    bottomY: 548,
     dimY: 500,
     captionY: 486,
     captionX: 535,
@@ -225,7 +225,7 @@ const buildIntroOverlay = () => {
     dotR: 0.85,
     extension: 18,
     tick: 7,
-    primeX: 16,
+    primeX: 12,
     primeY1: -29,
     primeY2: -15,
   };
@@ -237,7 +237,7 @@ const buildIntroOverlay = () => {
     leftX: 82,
     gridTopY: 58,
     gridEndX: 388,
-    bottomY: 334,
+    bottomY: 326,
     dimY: 303,
     captionY: 291,
     captionX: 235,
@@ -252,7 +252,7 @@ const buildIntroOverlay = () => {
     dotR: 0.55,
     extension: 11,
     tick: 4.5,
-    primeX: 7,
+    primeX: 5.5,
     primeY1: -16,
     primeY2: -9,
   };
@@ -549,7 +549,8 @@ const syncTopbarState = () => {
     return;
   }
 
-  const rawProgress = clamp((window.scrollY - 8) / 130, 0, 1);
+  const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const rawProgress = clamp(window.scrollY / maxScroll, 0, 1);
   const progress = easeScrollProgress(rawProgress);
   const viewportWidth = Math.min(window.innerWidth || 375, document.documentElement.clientWidth || 375);
   const startSize = clamp(viewportWidth * 0.082, 30, 36);
