@@ -35,10 +35,10 @@ const projectNavItems = [
     status: "В разработке",
   },
   {
-    href: "dom.html",
+    href: "bali-villas.html",
     number: "0.6",
-    title: "Частный жилой дом",
-    meta: "170 м² | Московская область, Россия",
+    title: "Комплекс из 4 вилл",
+    meta: "450 м² | о. Бали, Индонезия",
     status: "В реализации",
   },
   {
@@ -49,10 +49,10 @@ const projectNavItems = [
     status: "В разработке",
   },
   {
-    href: "bali-villas.html",
+    href: "dom.html",
     number: "0.8",
-    title: "Комплекс из 4 вилл",
-    meta: "450 м² | о. Бали, Индонезия",
+    title: "Частный жилой дом",
+    meta: "170 м² | Московская область, Россия",
     status: "В реализации",
   },
 ];
