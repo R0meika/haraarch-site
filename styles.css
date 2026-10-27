@@ -1754,9 +1754,16 @@ a.project-row:focus-visible .project-render img {
   background: #ffffff;
 }
 
-.gallery-lightbox.is-plan-lightbox .gallery-lightbox-prev,
-.gallery-lightbox.is-plan-lightbox .gallery-lightbox-next {
+.gallery-lightbox.is-plan-lightbox.is-plan-single .gallery-lightbox-prev,
+.gallery-lightbox.is-plan-lightbox.is-plan-single .gallery-lightbox-next {
   display: none;
+}
+
+@media (min-width: 761px) {
+  .gallery-lightbox.is-plan-lightbox:not(.is-plan-single) .gallery-lightbox-frame {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 16px;
+  }
 }
 
 .gallery-lightbox.is-plan-lightbox .gallery-lightbox-button {

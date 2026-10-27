@@ -947,6 +947,7 @@ const openLightbox = (items, index, gallery) => {
   activeGalleryItems = items;
   activeGalleryIndex = index;
   lightbox.classList.toggle("is-plan-lightbox", gallery?.classList.contains("project-docs"));
+  lightbox.classList.toggle("is-plan-single", items.length <= 1);
   renderLightboxItem();
   lightbox.classList.add("is-open");
   lightbox.setAttribute("aria-hidden", "false");
