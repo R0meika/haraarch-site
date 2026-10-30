@@ -1,3 +1,4 @@
+// projects:start
 const projectNavItems = [
   {
     href: "vauxhall.html",
@@ -56,6 +57,11 @@ const projectNavItems = [
     status: "В реализации",
   },
 ];
+// projects:end
+
+// services:start
+const servicesPublished = false;
+// services:end
 
 const buildIntroOverlay = () => {
   const isHomePage = Boolean(document.getElementById("home")) && !document.querySelector(".project-page-main");
@@ -292,7 +298,17 @@ const buildIntroOverlay = () => {
         <p class="intro-final-greek">χαρά</p>
       </div>
     </div>
-    <button class="intro-enter" type="button">Войти</button>
+    <div class="intro-hub">
+      <div class="clean-overlay-brand" aria-hidden="true">
+        <span class="brand-word">ХАРА<span class="accent-mark" aria-hidden="true"></span></span>
+      </div>
+      <button class="intro-enter" type="button">Войти</button>
+      <nav class="intro-hub-nav contact-actions" aria-label="Разделы практики">
+        <a href="#practice">Концепция</a>
+        <a href="#works" data-project-filter="architecture" data-hub-enter>Архитектура</a>
+        <a href="#works" data-project-filter="design" data-hub-enter>Дизайн</a>
+      </nav>
+    </div>
   `;
 
   document.body.classList.add("hara-intro-active");
@@ -301,6 +317,9 @@ const buildIntroOverlay = () => {
   let isClosed = false;
   let removeTimer = null;
   let clickGuardTimer = null;
+  let hubTimer = null;
+  let phase = "anim";
+  let swallowClicksUntil = 0;
 
   const blockClickThrough = (event) => {
     event.preventDefault();
@@ -314,6 +333,10 @@ const buildIntroOverlay = () => {
 
     isClosed = true;
     window.clearTimeout(removeTimer);
+    window.clearTimeout(hubTimer);
+    window.removeEventListener("keydown", onKeydown);
+    window.removeEventListener("wheel", onScrollIntent);
+    window.removeEventListener("touchmove", onScrollIntent);
     try {
       sessionStorage.setItem(storageKey, "true");
     } catch (error) {
@@ -331,24 +354,88 @@ const buildIntroOverlay = () => {
     removeTimer = window.setTimeout(() => intro.remove(), 720);
   };
 
-  const consumeIntroTap = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    closeIntro();
+  const overlayOpen = () => Boolean(document.querySelector(".clean-overlay.is-open"));
+
+  // second screen: Концепция / Архитектура / Дизайн + Войти
+  const showHub = () => {
+    if (isClosed || phase === "hub") {
+      return;
+    }
+
+    phase = "hub";
+    window.clearTimeout(hubTimer);
+    swallowClicksUntil = Date.now() + 600;
+    intro.classList.add("is-hub");
   };
 
-  const blockIntroClickThrough = (event) => {
+  const swallow = (event) => {
     event.preventDefault();
     event.stopPropagation();
   };
 
-  intro.addEventListener("pointerdown", consumeIntroTap, { capture: true });
-  intro.addEventListener("touchstart", consumeIntroTap, { capture: true, passive: false });
-  intro.addEventListener("click", blockIntroClickThrough, { capture: true });
-  intro.addEventListener("touchend", blockIntroClickThrough, { capture: true });
-  window.addEventListener("keydown", closeIntro, { once: true });
-  window.addEventListener("wheel", closeIntro, { once: true, passive: true });
-  window.addEventListener("touchmove", closeIntro, { once: true, passive: true });
+  const onKeydown = (event) => {
+    if (isClosed || event.key === "Tab" || event.key === "Shift" || event.altKey || event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    if (phase === "anim") {
+      showHub();
+      return;
+    }
+
+    if ((event.key === "Enter" || event.key === " ") && event.target === document.body && !overlayOpen()) {
+      event.preventDefault();
+      closeIntro();
+    }
+  };
+
+  const onScrollIntent = () => {
+    if (phase === "anim") {
+      showHub();
+      return;
+    }
+
+    if (!overlayOpen()) {
+      closeIntro();
+    }
+  };
+
+  intro.addEventListener("pointerdown", (event) => {
+    if (phase === "anim") {
+      swallow(event);
+      showHub();
+    }
+  }, { capture: true });
+  intro.addEventListener("touchstart", (event) => {
+    if (phase === "anim") {
+      swallow(event);
+      showHub();
+    }
+  }, { capture: true, passive: false });
+  intro.addEventListener("click", (event) => {
+    if (phase === "anim" || Date.now() < swallowClicksUntil) {
+      swallow(event);
+    }
+  }, { capture: true });
+  intro.addEventListener("touchend", (event) => {
+    if (Date.now() < swallowClicksUntil) {
+      swallow(event);
+    }
+  }, { capture: true });
+  // a click or tap anywhere else on the second screen enters the site, like the old intro did
+  intro.addEventListener("click", (event) => {
+    if (phase === "hub" && Date.now() >= swallowClicksUntil && !event.target.closest("a, button")) {
+      closeIntro();
+    }
+  });
+
+  intro.querySelector(".intro-enter").addEventListener("click", closeIntro);
+  intro.querySelectorAll("[data-hub-enter]").forEach((link) => link.addEventListener("click", closeIntro));
+
+  hubTimer = window.setTimeout(showHub, 2500);
+  window.addEventListener("keydown", onKeydown);
+  window.addEventListener("wheel", onScrollIntent, { passive: true });
+  window.addEventListener("touchmove", onScrollIntent, { passive: true });
 };
 
 const buildProjectIndex = () => {
@@ -438,6 +525,7 @@ const buildMobileServiceNav = () => {
   serviceNav.className = "mobile-service-nav";
   serviceNav.setAttribute("aria-label", "Разделы практики");
   serviceNav.innerHTML = `
+    <a href="#practice">Концепция</a>
     <a href="#works" data-project-filter="architecture">Архитектура</a>
     <a href="#works" data-project-filter="design">Дизайн</a>
   `;
@@ -495,6 +583,26 @@ const applyProjectFilter = (filter, options = {}) => {
   const firstVisibleRow = Array.from(projectRows).find((row) => !row.classList.contains("is-filtered-out"));
   firstVisibleRow?.classList.add("is-first-visible");
   document.body.classList.toggle("is-project-filtered", normalizedFilter !== "all");
+
+  let visibleIndex = 0;
+
+  projectRows.forEach((row) => {
+    const number = row.querySelector(".project-number");
+
+    if (!number) {
+      return;
+    }
+
+    number.dataset.fullNumber = number.dataset.fullNumber || number.textContent;
+
+    if (normalizedFilter === "all" || row.classList.contains("is-filtered-out")) {
+      number.textContent = number.dataset.fullNumber;
+      return;
+    }
+
+    visibleIndex += 1;
+    number.textContent = `0.${visibleIndex}`;
+  });
 
   projectFilterLinks.forEach((link) => {
     link.classList.toggle("is-active", link.dataset.projectFilter === normalizedFilter);
@@ -559,6 +667,8 @@ const createContactOverlay = () => {
 };
 
 const createConceptOverlay = () => {
+  const servicesHref = `${window.location.pathname.includes("/projects/") ? "../" : ""}services.html`;
+  const servicesLink = servicesPublished ? `<p class="concept-services"><a href="${servicesHref}">Услуги</a></p>` : "";
   const overlay = document.createElement("div");
   overlay.className = "clean-overlay concept-overlay";
   overlay.setAttribute("aria-hidden", "true");
@@ -571,6 +681,7 @@ const createConceptOverlay = () => {
       <div class="concept-overlay-content">
         <p>ХАРА́ | Архитектурная и дизайн-практика для частных домов, жилых интерьеров и камерных общественных пространств.</p>
         <p>В основе проекта - пропорция, ясная структура, свет и сдержанная материальность.</p>
+        ${servicesLink}
       </div>
     </div>
   `;
@@ -826,6 +937,36 @@ const ensureGalleryShell = (gallery) => {
     gallery.scrollBy({ left: scrollStep(), behavior: "smooth" });
   });
 
+  const figures = Array.from(gallery.querySelectorAll("figure"));
+
+  if (figures.length > 1) {
+    const counter = document.createElement("p");
+    counter.className = "project-gallery-counter";
+    counter.setAttribute("aria-hidden", "true");
+    shell.append(counter);
+
+    const updateCounter = () => {
+      let current = 0;
+      let best = Infinity;
+
+      figures.forEach((figure, index) => {
+        const distance = Math.abs(figure.offsetLeft - gallery.offsetLeft - gallery.scrollLeft);
+
+        if (distance < best) {
+          best = distance;
+          current = index;
+        }
+      });
+
+      const atEnd = gallery.scrollLeft + gallery.clientWidth >= gallery.scrollWidth - 4;
+      counter.textContent = `${atEnd ? figures.length : current + 1} / ${figures.length}`;
+    };
+
+    gallery.addEventListener("scroll", () => window.requestAnimationFrame(updateCounter), { passive: true });
+    window.addEventListener("resize", updateCounter);
+    updateCounter();
+  }
+
   gallery.dataset.controlsReady = "true";
 };
 
@@ -940,7 +1081,7 @@ const renderLightboxItem = () => {
 
   lightboxImage.src = image.currentSrc || image.src;
   lightboxImage.alt = image.alt || "";
-  lightboxCaption.textContent = "";
+  lightboxCaption.textContent = activeGalleryItems.length > 1 ? `${activeGalleryIndex + 1} / ${activeGalleryItems.length}` : "";
 };
 
 const openLightbox = (items, index, gallery) => {
