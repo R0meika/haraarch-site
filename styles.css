@@ -38,504 +38,167 @@ body {
   background: var(--bg);
 }
 
-body.hara-intro-active {
-  overflow: hidden;
-}
-
-.hara-intro {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  padding: clamp(24px, 5vw, 64px);
-  background: #ffffff;
-  color: var(--text);
-  cursor: pointer;
-}
-
-.hara-intro.is-exiting {
-  animation: intro-fade-out 700ms ease forwards;
-}
-
-.hara-intro-drawing {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(82vw, 900px);
-  max-height: min(76vh, 620px);
-  overflow: visible;
-  transform: translate(-50%, -50%);
-}
-
-.intro-composition {
-  animation: intro-composition-out 780ms ease forwards;
-  animation-delay: 6450ms;
-}
-
-.intro-line {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 0.64;
-  opacity: 0;
-  vector-effect: non-scaling-stroke;
-  animation: intro-line-in 520ms ease forwards;
-  transform-box: fill-box;
-}
-
-.intro-axis {
-  stroke-linecap: butt;
-}
-
-.intro-axis-dot {
-  fill: currentColor;
-  opacity: 0;
-  animation: intro-dot-in 240ms ease forwards;
-}
-
-.intro-dim {
-  stroke-width: 0.58;
-}
-
-.intro-h,
-.intro-dim-main {
-  transform: scaleX(0);
-  transform-origin: left center;
-}
-
-.intro-v,
-.intro-dim-vertical {
-  transform: scaleY(0);
-  transform-origin: center top;
-}
-
-.intro-dim-tick {
-  transform: scale(0);
-  transform-origin: center;
-}
-
-.intro-mark-content {
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: intro-mark-in 420ms ease forwards;
-}
-
-.intro-axis-bubble {
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: intro-mark-in 420ms ease forwards;
-}
-
-.intro-mark circle,
-.intro-axis-bubble {
-  fill: #ffffff;
-  stroke: currentColor;
-  stroke-width: 0.9;
-  vector-effect: non-scaling-stroke;
-}
-
-.intro-mark text,
-.intro-caption {
-  fill: currentColor;
-  font-family: "Manrope", sans-serif;
-  text-anchor: middle;
-  dominant-baseline: central;
-}
-
-.intro-mark text {
-  font-size: 34px;
-  font-weight: 400;
-}
-
-.intro-greek-mark text {
-  font-size: 38px;
-}
-
-.intro-greek-letter {
-  opacity: 0;
-  animation: intro-letter-in 460ms ease forwards;
-}
-
-.intro-brand-letter {
-  opacity: 0;
-  animation: intro-letter-in 480ms ease forwards;
-}
-
-.intro-brand-letter-main {
-  text-anchor: middle;
-}
-
-.intro-brand-prime {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: butt;
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-  opacity: 0;
-  animation: intro-letter-in 480ms ease forwards;
-}
-
-.intro-caption-mask {
-  fill: #ffffff;
-  opacity: 0;
-  animation: intro-mask-in 300ms ease forwards;
-}
-
-.intro-caption {
-  opacity: 0;
-  font-size: 20px;
-  letter-spacing: 0;
-  animation: intro-caption-in 480ms ease forwards;
-}
-
-.intro-final {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  --intro-final-brand-size: clamp(4.5rem, 9vw, 8rem);
-  --intro-final-width: calc(var(--intro-final-brand-size) * 3.18);
-  width: min(90vw, 820px);
-  opacity: 0;
-  text-align: center;
-  transform: translate(-50%, calc(-50% + 16px));
-  animation: intro-final-in 680ms ease forwards;
-  animation-delay: 6850ms;
-}
-
-.hara-intro--final-only .intro-final {
-  animation-delay: 420ms;
-}
-
-.intro-final p {
-  margin: 0;
-}
-
-.intro-final-lockup {
-  width: min(100%, var(--intro-final-width));
-  margin: 0 auto;
-}
-
-.intro-final-brand {
-  font-size: var(--intro-final-brand-size);
-  font-weight: 600;
-  line-height: 0.86;
-}
-
-.intro-final-word {
-  position: relative;
-  display: inline-block;
-}
-
-.intro-final-accent {
-  position: absolute;
-  top: -0.045em;
-  right: 0.105em;
-  width: 0.11em;
-  height: 0.034em;
-  background: currentColor;
-  border-radius: 999px;
-  transform: rotate(-58deg);
-  transform-origin: center;
-}
-
-.intro-final-practice {
-  margin-top: clamp(16px, 2.1vw, 24px);
-  width: 100%;
-  color: var(--text);
-  font-size: clamp(1rem, 1.25vw, 1.28rem);
-  line-height: 1.25;
-  white-space: nowrap;
-}
-
-.intro-final-measure {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 15px;
-  margin: 5px 0 0;
-  color: var(--text);
-}
-
-.intro-final-measure-line {
-  position: absolute;
-  top: 7px;
-  right: 0;
-  left: 0;
-  height: 1px;
-  background: currentColor;
-}
-
-.intro-final-measure-tick {
-  position: absolute;
-  top: 2px;
-  width: 1px;
-  height: 12px;
-  background: currentColor;
-  opacity: 0;
-  transform: rotate(42deg) scaleY(0.65);
-  transform-origin: center;
-  animation: intro-final-tick-in 320ms ease forwards;
-  animation-delay: 7650ms;
-}
-
-.hara-intro--final-only .intro-final-measure-tick {
-  animation-delay: 1120ms;
-}
-
-.intro-final-measure-tick-left {
-  left: 0;
-}
-
-.intro-final-measure-tick-right {
-  right: 0;
-}
-
-.intro-final-greek {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: clamp(1.12rem, 1.6vw, 1.55rem);
-  font-weight: 400;
-  line-height: 1.2;
-}
-
-.intro-enter {
-  position: fixed;
-  top: clamp(20px, 3vw, 38px);
-  right: clamp(22px, 3vw, 42px);
-  z-index: 1;
-  padding: 0;
-  border: 0;
-  opacity: 0;
-  color: var(--text);
-  background: transparent;
-  cursor: pointer;
-  animation: intro-enter-in 480ms ease forwards;
-  animation-delay: 7750ms;
-}
-
-.hara-intro--final-only .intro-enter {
-  animation-delay: 1380ms;
-}
-
-.intro-enter::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: -4px;
-  left: 0;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 160ms ease;
-}
-
-.intro-enter:hover::after,
-.intro-enter:focus-visible::after {
-  transform: scaleX(1);
-}
-
-.intro-delay-1 {
-  animation-delay: 90ms;
-}
-
-.intro-delay-2 {
-  animation-delay: 270ms;
-}
-
-.intro-delay-3 {
-  animation-delay: 450ms;
-}
-
-.intro-delay-4 {
-  animation-delay: 630ms;
-}
-
-.intro-delay-5 {
-  animation-delay: 900ms;
-}
-
-.intro-delay-6 {
-  animation-delay: 1080ms;
-}
-
-.intro-delay-7 {
-  animation-delay: 1260ms;
-}
-
-.intro-delay-8 {
-  animation-delay: 1440ms;
-}
-
-.intro-delay-9 {
-  animation-delay: 2550ms;
-}
-
-.intro-delay-10 {
-  animation-delay: 2670ms;
-}
-
-.intro-delay-11 {
-  animation-delay: 2790ms;
-}
-
-.intro-delay-12 {
-  animation-delay: 2910ms;
-}
-
-.intro-delay-13 {
-  animation-delay: 3060ms;
-}
-
-.intro-delay-14 {
-  animation-delay: 3180ms;
-}
-
-.intro-delay-15 {
-  animation-delay: 3300ms;
-}
-
-.intro-delay-16 {
-  animation-delay: 3420ms;
-}
-
-.intro-delay-17 {
-  animation-delay: 3600ms;
-}
-
-.intro-delay-18 {
-  animation-delay: 3760ms;
-}
-
-.intro-delay-19 {
-  animation-delay: 3920ms;
-}
-
-.intro-delay-20 {
-  animation-delay: 4080ms;
-}
-
-.intro-delay-21 {
-  animation-delay: 4300ms;
-}
-
-.intro-delay-22 {
-  animation-delay: 4480ms;
-}
-
-.intro-delay-23 {
-  animation-delay: 4660ms;
-}
-
-.intro-delay-24 {
-  animation-delay: 4840ms;
-}
-
-.intro-delay-25 {
-  animation-delay: 5150ms;
-}
-
-.intro-delay-26 {
-  animation-delay: 5350ms;
-}
-
-.intro-delay-27 {
-  animation-delay: 5550ms;
-}
-
-@keyframes intro-line-in {
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes intro-mark-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.96);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes intro-dot-in {
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes intro-letter-in {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes intro-mask-in {
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes intro-caption-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes intro-composition-out {
-  to {
-    opacity: 0;
-    transform: scale(0.985);
-  }
-}
-
-@keyframes intro-final-in {
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
-}
-
-@keyframes intro-final-tick-in {
-  from {
-    opacity: 0;
-    transform: rotate(42deg) scaleY(0.2);
-  }
-
-  to {
-    opacity: 1;
-    transform: rotate(42deg) scaleY(1);
-  }
-}
-
-@keyframes intro-enter-in {
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes intro-fade-out {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 a {
   color: inherit;
@@ -2055,61 +1718,29 @@ a.project-row:focus-visible .project-render img {
     --fs-display: 3.15rem;
   }
 
-  .hara-intro {
-    padding: 22px;
-  }
+  
 
-  .hara-intro-drawing {
-    top: calc(50dvh + 22px);
-    width: min(92vw, 396px);
-    max-height: 56vh;
-  }
+  
 
-  .intro-mark text {
-    font-size: 21px;
-  }
+  
 
-  .intro-greek-mark text {
-    font-size: 24px;
-  }
+  
 
-  .intro-caption {
-    font-size: 12px;
-  }
+  
 
-  .intro-final {
-    --intro-final-brand-size: clamp(3.45rem, 17vw, 5rem);
-    --intro-final-width: calc(var(--intro-final-brand-size) * 3.12);
-    width: calc(100vw - 36px);
-  }
+  
 
-  .intro-final-practice {
-    margin-top: 14px;
-    font-size: clamp(0.82rem, 3.25vw, 0.96rem);
-  }
+  
 
-  .intro-final-measure {
-    height: 12px;
-    margin-top: 4px;
-  }
+  
 
-  .intro-final-measure-line {
-    top: 6px;
-  }
+  
 
-  .intro-final-measure-tick {
-    top: 2px;
-    height: 10px;
-  }
+  
 
-  .intro-final-greek {
-    margin-top: 5px;
-  }
+  
 
-  .intro-enter {
-    top: max(18px, env(safe-area-inset-top));
-    right: 18px;
-  }
+  
 
   .site-shell {
     padding: 0 0 calc(64px + env(safe-area-inset-bottom));
@@ -2933,37 +2564,13 @@ a.project-row:focus-visible .project-render img {
     transform: none;
   }
 
-  .intro-line,
-  .intro-axis-dot,
-  .intro-mark-content,
-  .intro-axis-bubble,
-  .intro-greek-letter,
-  .intro-brand-letter,
-  .intro-brand-prime,
-  .intro-caption-mask,
-  .intro-caption,
-  .intro-composition,
-  .intro-final,
-  .intro-final-measure-tick,
-  .intro-enter,
-  .hara-intro.is-exiting {
-    animation-duration: 1ms;
-  }
+  
 
-  .hara-intro.is-reduced .intro-composition {
-    display: none;
-  }
+  
 
-  .hara-intro.is-reduced .intro-final,
-  .hara-intro.is-reduced .intro-enter {
-    opacity: 1;
-    animation: none;
-    transform: translate(-50%, -50%);
-  }
+  
 
-  .hara-intro.is-reduced .intro-enter {
-    transform: none;
-  }
+  
 }
 
 .project-page-grid:has(> .project-docs) .project-facts,
@@ -3134,77 +2741,23 @@ button:focus-visible,
   }
 }
 
-/* intro hub: second screen after the logo animation */
-@keyframes intro-final-out {
-  from {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
 
-  to {
-    opacity: 0;
-    transform: translate(-50%, calc(-50% - 10px));
-  }
-}
 
-.hara-intro.is-hub .intro-final {
-  animation: intro-final-out 400ms ease forwards;
-}
 
-.intro-hub {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 450ms ease, visibility 0s linear 450ms;
-}
 
-.hara-intro.is-hub {
-  cursor: default;
-}
 
-.hara-intro.is-hub .intro-hub {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition: opacity 500ms ease 250ms, visibility 0s;
-}
 
-.hara-intro .intro-hub .intro-enter {
-  position: absolute;
-  top: 30px;
-  right: var(--page-gutter);
-  padding: 0;
-  opacity: 1;
-  animation: none;
-}
 
-.intro-hub-nav {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  justify-content: center;
-  white-space: nowrap;
-  transform: translate(-50%, -50%);
-}
 
-/* the concept / contact windows may be opened over the intro */
-.hara-intro-active .clean-overlay.is-open {
-  z-index: 10000;
-}
 
-@media (max-width: 760px) {
-  .hara-intro .intro-hub .intro-enter {
-    top: 16px;
-    right: 18px;
-  }
 
-  .intro-hub-nav {
-    flex-wrap: nowrap;
-    font-size: clamp(0.92rem, 3.2vw, 1rem);
-  }
-}
+
+
+
+
+
+
+
 
 :root {
   --project-title-size: clamp(1.9rem, 1.15rem + 2.15vw, 3.05rem);
@@ -3220,4 +2773,49 @@ button:focus-visible,
   .project-index {
     top: calc(var(--topbar-height) + var(--project-intro-top) + var(--project-title-size) * 0.124 - 0.75px);
   }
+}
+
+/* entrance animation (see buildIntroOverlay in script.js) */
+.hara-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.hi-cover,
+.hi-top,
+.hi-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+}
+
+.hi-cover {
+  top: 0;
+  bottom: 0;
+}
+
+.hi-top {
+  top: 0;
+}
+
+.hi-bottom {
+  bottom: 0;
+}
+
+.hi-logo {
+  position: absolute;
+  transform-origin: 0 0;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.hi-l {
+  display: inline-block;
+}
+
+.hi-line {
+  position: absolute;
+  background: var(--line);
 }

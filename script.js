@@ -69,7 +69,7 @@ const buildIntroOverlay = () => {
   const forceIntro = params.get("intro") === "1";
   const skipIntro = params.get("intro") === "0";
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const storageKey = "haraIntroSeenFinalOnly";
+  const storageKey = "haraIntroLine";
   let introSeen = false;
 
   try {
@@ -78,364 +78,161 @@ const buildIntroOverlay = () => {
     introSeen = false;
   }
 
-  if (!isHomePage || skipIntro || (!forceIntro && (reducedMotion || introSeen))) {
+  const topbar = document.querySelector(".topbar");
+  const brand = document.querySelector(".topbar .brand-word");
+
+  if (!isHomePage || skipIntro || !topbar || !brand || window.scrollY > 0 || (!forceIntro && (reducedMotion || introSeen))) {
     return;
   }
 
-  const createIntroSvg = (layout) => {
-    const greekLetters = ["χ", "α", "ρ", "ά"];
-    const russianLetters = ["Х", "А", "Р", "А"];
-    const rowDelayStart = 90;
-    const columnDelayStart = 900;
-    const rowDelayStep = 160;
-    const columnDelayStep = 70;
-    const axisSegmentStep = 34;
-    const greekCircleDelayBase = 9;
-    const russianCircleDelayBase = 13;
-    const greekLetterDelayBase = 17;
-    const russianLetterDelayBase = 21;
-    const dimensionDelay = 25;
-    const captionDelay = 27;
+  try {
+    sessionStorage.setItem(storageKey, "true");
+  } catch (error) {
+    // Private browsing: the intro may repeat, that is fine.
+  }
 
-    const axisLine = (className, x1, y1, x2, y2, delay) =>
-      `<line class="intro-line intro-axis ${className}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="animation-delay: ${delay}ms" />`;
-    const axisDot = (cx, cy, delay) =>
-      `<circle class="intro-axis-dot" cx="${cx}" cy="${cy}" r="${layout.dotR}" style="animation-delay: ${delay}ms" />`;
-    const makeAxisStepper = (startDelay) => {
-      let step = 0;
-      const nextDelay = () => startDelay + step++ * axisSegmentStep;
+  // Letters come together, the accent falls, then a line rises into the header line and opens the site
+  // while the logo lands in the header. Any click, key, scroll or touch skips it.
+  const root = document.createElement("div");
+  root.className = "hara-intro";
+  root.setAttribute("aria-hidden", "true");
+  document.body.append(root);
 
-      return {
-        line: (className, x1, y1, x2, y2) => axisLine(className, x1, y1, x2, y2, nextDelay()),
-        dot: (cx, cy) => axisDot(cx, cy, nextDelay()),
-      };
-    };
-    const segmentedRange = (start, end, fixed, next, orientation) => {
-      const mid = (start + end) / 2;
-      const firstEnd = mid - layout.dotGap;
-      const secondStart = mid + layout.dotGap;
-
-      if (orientation === "h") {
-        return [
-          next.line("intro-h", start, fixed, firstEnd, fixed),
-          next.dot(mid, fixed),
-          next.line("intro-h", secondStart, fixed, end, fixed),
-        ].join("");
-      }
-
-      return [
-        next.line("intro-v", fixed, start, fixed, firstEnd),
-        next.dot(fixed, mid),
-        next.line("intro-v", fixed, secondStart, fixed, end),
-      ].join("");
-    };
-    const buildHorizontalAxis = (y, index) => {
-      const next = makeAxisStepper(rowDelayStart + index * rowDelayStep);
-      const parts = [next.line("intro-h", layout.leftX, y, layout.cols[0] - layout.nodeArm, y)];
-
-      layout.cols.forEach((x, columnIndex) => {
-        parts.push(next.line("intro-h intro-axis-node", x - layout.nodeArm, y, x + layout.nodeArm, y));
-
-        if (columnIndex < layout.cols.length - 1) {
-          parts.push(segmentedRange(x + layout.nodeArm, layout.cols[columnIndex + 1] - layout.nodeArm, y, next, "h"));
-        }
-      });
-      parts.push(next.line("intro-h", layout.cols[layout.cols.length - 1] + layout.nodeArm, y, layout.gridEndX, y));
-
-      return parts.join("");
-    };
-    const buildVerticalAxis = (x, index) => {
-      const next = makeAxisStepper(columnDelayStart + index * columnDelayStep);
-      const parts = [next.line("intro-v", x, layout.gridTopY, x, layout.rows[0] - layout.nodeArm)];
-
-      layout.rows.forEach((y, rowIndex) => {
-        parts.push(next.line("intro-v intro-axis-node", x, y - layout.nodeArm, x, y + layout.nodeArm));
-
-        if (rowIndex < layout.rows.length - 1) {
-          parts.push(segmentedRange(y + layout.nodeArm, layout.rows[rowIndex + 1] - layout.nodeArm, x, next, "v"));
-        }
-      });
-      parts.push(next.line("intro-v", x, layout.rows[layout.rows.length - 1] + layout.nodeArm, x, layout.bottomY));
-
-      return parts.join("");
-    };
-
-    const horizontalAxes = layout.rows.map(buildHorizontalAxis).join("");
-    const verticalAxes = layout.cols.map(buildVerticalAxis).join("");
-
-    const greekMarks = layout.rows
-      .map(
-        (y, index) => `
-          <g class="intro-mark intro-greek-mark" transform="translate(${layout.leftX} ${y})">
-            <g>
-              <circle class="intro-axis-bubble intro-delay-${greekCircleDelayBase + index}" r="${layout.r}" />
-              <text class="intro-greek-letter intro-greek-letter-${index} intro-delay-${greekLetterDelayBase + index}">${greekLetters[index]}</text>
-            </g>
-          </g>`
-      )
-      .join("");
-
-    const russianMarks = layout.cols
-      .map((x, index) => {
-        const delay = russianLetterDelayBase + index;
-        const letter =
-          index === 3
-            ? `
-              <text class="intro-brand-letter intro-brand-letter-main intro-delay-${delay}">А</text>
-              <line class="intro-brand-prime intro-delay-${delay}" x1="${layout.primeX}" y1="${layout.primeY1}" x2="${layout.primeX}" y2="${layout.primeY2}" />`
-            : `<text class="intro-brand-letter intro-delay-${delay}">${russianLetters[index]}</text>`;
-
-        return `
-          <g class="intro-mark intro-russian-mark" transform="translate(${x} ${layout.bottomY})">
-            <circle class="intro-axis-bubble intro-delay-${russianCircleDelayBase + index}" r="${layout.r}" />
-            ${letter}
-          </g>`;
-      })
-      .join("");
-
-    return `
-      <svg class="hara-intro-drawing" viewBox="0 0 ${layout.width} ${layout.height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="ХАРА́">
-        <g class="intro-composition">
-          <g class="intro-grid">
-            ${horizontalAxes}
-            ${verticalAxes}
-          </g>
-
-          <g class="intro-left-marks">
-            ${greekMarks}
-          </g>
-
-          <g class="intro-bottom-marks">
-            ${russianMarks}
-          </g>
-
-          <g class="intro-dimension">
-            <line class="intro-line intro-dim intro-dim-main intro-delay-${dimensionDelay}" x1="${layout.cols[0]}" y1="${layout.dimY}" x2="${layout.cols[3]}" y2="${layout.dimY}" />
-            <line class="intro-line intro-dim intro-dim-vertical intro-delay-${dimensionDelay}" x1="${layout.cols[0]}" y1="${layout.dimY - layout.extension}" x2="${layout.cols[0]}" y2="${layout.dimY + layout.extension}" />
-            <line class="intro-line intro-dim intro-dim-vertical intro-delay-${dimensionDelay}" x1="${layout.cols[3]}" y1="${layout.dimY - layout.extension}" x2="${layout.cols[3]}" y2="${layout.dimY + layout.extension}" />
-            <line class="intro-line intro-dim intro-dim-tick intro-delay-${dimensionDelay + 1}" x1="${layout.cols[0] - layout.tick}" y1="${layout.dimY + layout.tick}" x2="${layout.cols[0] + layout.tick}" y2="${layout.dimY - layout.tick}" />
-            <line class="intro-line intro-dim intro-dim-tick intro-delay-${dimensionDelay + 1}" x1="${layout.cols[3] - layout.tick}" y1="${layout.dimY + layout.tick}" x2="${layout.cols[3] + layout.tick}" y2="${layout.dimY - layout.tick}" />
-            <rect class="intro-caption-mask intro-delay-${captionDelay - 1}" x="${layout.captionMaskX}" y="${layout.captionMaskY}" width="${layout.captionMaskWidth}" height="${layout.captionMaskHeight}" />
-            <text class="intro-caption intro-delay-${captionDelay}" x="${layout.captionX}" y="${layout.captionY}"${layout.captionLength ? ` textLength="${layout.captionLength}" lengthAdjust="spacingAndGlyphs"` : ""}>Архитектурная и дизайн-практика</text>
-          </g>
-        </g>
-      </svg>
-    `;
+  const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+  const layer = (className, html = "") => {
+    const node = document.createElement("div");
+    node.className = className;
+    node.innerHTML = html;
+    root.append(node);
+    return node;
   };
+  const skipEvents = ["pointerdown", "keydown", "wheel", "touchstart"];
+  let done = false;
 
-  const intro = document.createElement("div");
-  intro.className = `hara-intro hara-intro--final-only${reducedMotion ? " is-reduced" : ""}`;
-  intro.setAttribute("role", "dialog");
-  intro.setAttribute("aria-label", "Вход на сайт ХАРА́");
-  const isCompactIntro = window.matchMedia("(max-width: 760px)").matches;
-  const desktopLayout = {
-    width: 1000,
-    height: 650,
-    rows: [132, 232, 332, 432],
-    cols: [310, 460, 610, 760],
-    leftX: 220,
-    gridTopY: 78,
-    gridEndX: 850,
-    bottomY: 548,
-    dimY: 500,
-    captionY: 486,
-    captionX: 535,
-    captionLength: 338,
-    captionMaskX: 362,
-    captionMaskY: 470,
-    captionMaskWidth: 346,
-    captionMaskHeight: 26,
-    r: 32,
-    nodeArm: 22,
-    dotGap: 7,
-    dotR: 0.85,
-    extension: 18,
-    tick: 7,
-    primeX: 12,
-    primeY1: -29,
-    primeY2: -15,
-  };
-  const mobileLayout = {
-    width: 470,
-    height: 470,
-    rows: [92, 145, 198, 251],
-    cols: [121, 197, 273, 349],
-    leftX: 82,
-    gridTopY: 58,
-    gridEndX: 388,
-    bottomY: 326,
-    dimY: 303,
-    captionY: 291,
-    captionX: 235,
-    captionLength: 198,
-    captionMaskX: 133,
-    captionMaskY: 277,
-    captionMaskWidth: 204,
-    captionMaskHeight: 20,
-    r: 18,
-    nodeArm: 10,
-    dotGap: 4,
-    dotR: 0.55,
-    extension: 11,
-    tick: 4.5,
-    primeX: 5.5,
-    primeY1: -16,
-    primeY2: -9,
-  };
-
-  intro.innerHTML = `
-    <div class="intro-final" aria-hidden="true">
-      <div class="intro-final-lockup">
-        <p class="intro-final-brand" aria-label="ХАРА́">
-          <span class="intro-final-word" aria-hidden="true">ХАРА<span class="intro-final-accent"></span></span>
-        </p>
-        <p class="intro-final-practice">архитектурная и дизайн-практика</p>
-        <span class="intro-final-measure" aria-hidden="true">
-          <span class="intro-final-measure-line"></span>
-          <span class="intro-final-measure-tick intro-final-measure-tick-left"></span>
-          <span class="intro-final-measure-tick intro-final-measure-tick-right"></span>
-        </span>
-        <p class="intro-final-greek">χαρά</p>
-      </div>
-    </div>
-    <div class="intro-hub">
-      <div class="clean-overlay-brand" aria-hidden="true">
-        <span class="brand-word">ХАРА<span class="accent-mark" aria-hidden="true"></span></span>
-      </div>
-      <button class="intro-enter" type="button">Войти</button>
-      <nav class="intro-hub-nav contact-actions" aria-label="Разделы практики">
-        <a href="#practice">Концепция</a>
-        <a href="#works" data-project-filter="architecture" data-hub-enter>Архитектура</a>
-        <a href="#works" data-project-filter="design" data-hub-enter>Дизайн</a>
-      </nav>
-    </div>
-  `;
-
-  document.body.classList.add("hara-intro-active");
-  document.body.append(intro);
-
-  let isClosed = false;
-  let removeTimer = null;
-  let clickGuardTimer = null;
-  let hubTimer = null;
-  let phase = "anim";
-  let swallowClicksUntil = 0;
-
-  const blockClickThrough = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  const closeIntro = () => {
-    if (isClosed) {
+  const finish = (quick) => {
+    if (done) {
       return;
     }
 
-    isClosed = true;
-    window.clearTimeout(removeTimer);
-    window.clearTimeout(hubTimer);
-    window.removeEventListener("keydown", onKeydown);
-    window.removeEventListener("wheel", onScrollIntent);
-    window.removeEventListener("touchmove", onScrollIntent);
-    try {
-      sessionStorage.setItem(storageKey, "true");
-    } catch (error) {
-      // Private browsing or locked storage should not block the site.
+    done = true;
+    skipEvents.forEach((name) => window.removeEventListener(name, skip));
+
+    if (quick) {
+      root.style.transition = "opacity 260ms ease";
+      root.style.opacity = "0";
+      window.setTimeout(() => root.remove(), 280);
+    } else {
+      root.remove();
     }
-    window.addEventListener("click", blockClickThrough, true);
-    window.addEventListener("touchend", blockClickThrough, true);
-    window.clearTimeout(clickGuardTimer);
-    clickGuardTimer = window.setTimeout(() => {
-      window.removeEventListener("click", blockClickThrough, true);
-      window.removeEventListener("touchend", blockClickThrough, true);
-    }, 1400);
-    intro.classList.add("is-exiting");
-    document.body.classList.remove("hara-intro-active");
-    removeTimer = window.setTimeout(() => intro.remove(), 720);
   };
 
-  const overlayOpen = () => Boolean(document.querySelector(".clean-overlay.is-open"));
+  function skip() {
+    finish(true);
+  }
 
-  // second screen: Концепция / Архитектура / Дизайн + Войти
-  const showHub = () => {
-    if (isClosed || phase === "hub") {
+  skipEvents.forEach((name) => window.addEventListener(name, skip, { passive: true }));
+  layer("hi-cover");
+  window.setTimeout(() => finish(false), 7000); // safety net: the site is never left covered
+
+  const run = async () => {
+    await Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), wait(900)]);
+    await wait(60); // let the first layout settle (a plain timer also works in background tabs)
+
+    if (done) {
       return;
     }
 
-    phase = "hub";
-    window.clearTimeout(hubTimer);
-    swallowClicksUntil = Date.now() + 600;
-    intro.classList.add("is-hub");
+    const sw = root.clientWidth;
+    const sh = root.clientHeight;
+    const tb = topbar.getBoundingClientRect();
+    const lr = brand.getBoundingClientRect();
+    const after = window.getComputedStyle(topbar, "::after");
+    const th = parseFloat(after.height) || 2;
+    const lineY = tb.bottom - th;
+    const lineL = tb.left + (parseFloat(after.left) || 0);
+    const lineR = tb.right - (parseFloat(after.right) || 0);
+    const brandStyle = window.getComputedStyle(brand.parentElement);
+
+    const targetW = Math.min(sw * 0.55, 420);
+    const s0 = targetW / lr.width;
+    const startCy = sh * 0.42;
+    const tx = sw / 2 - targetW / 2 - lr.left;
+    const ty = startCy - (lr.height * s0) / 2 - lr.top;
+    const y0 = startCy + (lr.height * s0) / 2 + 16;
+
+    const bottom = layer("hi-bottom");
+    bottom.style.top = `${y0}px`;
+    const top = layer("hi-top");
+    top.style.height = `${y0}px`;
+
+    const letters = "ХАРА".split("").map((ch) => `<span class="hi-l">${ch}</span>`).join("");
+    const logo = layer("hi-logo", `<span class="brand-word">${letters}<span class="accent-mark"></span></span>`);
+    logo.style.left = `${lr.left}px`;
+    logo.style.top = `${lr.top}px`;
+    logo.style.font = brandStyle.font;
+    logo.style.letterSpacing = brandStyle.letterSpacing;
+    logo.style.lineHeight = brandStyle.lineHeight;
+    logo.style.transform = `translate(${tx}px, ${ty}px) scale(${s0})`;
+
+    const line = layer("hi-line");
+    line.style.height = `${th}px`;
+    line.style.top = `${y0}px`;
+    line.style.left = `${sw / 2}px`;
+    line.style.width = "0px";
+
+    root.querySelector(".hi-cover").remove();
+
+    const spans = [...logo.querySelectorAll(".hi-l")];
+    const accent = logo.querySelector(".accent-mark");
+    const spread = (sw * 0.2) / s0;
+    spans.forEach((span, index) => {
+      span.style.opacity = "0";
+      span.style.transform = `translateX(${(index - 1.5) * spread}px)`;
+    });
+    accent.style.opacity = "0";
+    accent.style.transform = "translateY(-0.5em) rotate(-58deg)";
+
+    await wait(250);
+    if (done) return;
+    spans.forEach((span) => {
+      span.style.transition = "opacity 350ms ease";
+      span.style.opacity = "1";
+    });
+    await wait(400);
+    if (done) return;
+    spans.forEach((span) => {
+      span.style.transition = "transform 750ms cubic-bezier(0.65, 0, 0.35, 1)";
+      span.style.transform = "translateX(0)";
+    });
+    await wait(800);
+    if (done) return;
+    accent.style.transition = "opacity 250ms ease, transform 320ms ease";
+    accent.style.opacity = "1";
+    accent.style.transform = "translateY(0) rotate(-58deg)";
+    await wait(380);
+    if (done) return;
+    logo.innerHTML = brand.outerHTML; // the exact header markup, so the landing matches pixel for pixel
+
+    const ease = "950ms cubic-bezier(0.65, 0, 0.35, 1)";
+    top.style.transition = `height ${ease}`;
+    top.style.height = `${lineY + th}px`;
+    line.style.transition = `top ${ease}, left ${ease}, width ${ease}`;
+    line.style.top = `${lineY}px`;
+    line.style.left = `${lineL}px`;
+    line.style.width = `${lineR - lineL}px`;
+    logo.style.transition = `transform ${ease}`;
+    logo.style.transform = "translate(0px, 0px) scale(1)";
+    bottom.style.transition = "opacity 400ms ease";
+    bottom.style.opacity = "0";
+    await wait(1000);
+    if (done) return;
+    top.style.transition = "opacity 250ms ease";
+    top.style.opacity = "0";
+    await wait(280);
+    finish(false);
   };
 
-  const swallow = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-  };
-
-  const onKeydown = (event) => {
-    if (isClosed || event.key === "Tab" || event.key === "Shift" || event.altKey || event.ctrlKey || event.metaKey) {
-      return;
-    }
-
-    if (phase === "anim") {
-      showHub();
-      return;
-    }
-
-    if ((event.key === "Enter" || event.key === " ") && event.target === document.body && !overlayOpen()) {
-      event.preventDefault();
-      closeIntro();
-    }
-  };
-
-  const onScrollIntent = () => {
-    if (phase === "anim") {
-      showHub();
-      return;
-    }
-
-    if (!overlayOpen()) {
-      closeIntro();
-    }
-  };
-
-  intro.addEventListener("pointerdown", (event) => {
-    if (phase === "anim") {
-      swallow(event);
-      showHub();
-    }
-  }, { capture: true });
-  intro.addEventListener("touchstart", (event) => {
-    if (phase === "anim") {
-      swallow(event);
-      showHub();
-    }
-  }, { capture: true, passive: false });
-  intro.addEventListener("click", (event) => {
-    if (phase === "anim" || Date.now() < swallowClicksUntil) {
-      swallow(event);
-    }
-  }, { capture: true });
-  intro.addEventListener("touchend", (event) => {
-    if (Date.now() < swallowClicksUntil) {
-      swallow(event);
-    }
-  }, { capture: true });
-  // a click or tap anywhere else on the second screen enters the site, like the old intro did
-  intro.addEventListener("click", (event) => {
-    if (phase === "hub" && Date.now() >= swallowClicksUntil && !event.target.closest("a, button")) {
-      closeIntro();
-    }
-  });
-
-  intro.querySelector(".intro-enter").addEventListener("click", closeIntro);
-  intro.querySelectorAll("[data-hub-enter]").forEach((link) => link.addEventListener("click", closeIntro));
-
-  hubTimer = window.setTimeout(showHub, 2500);
-  window.addEventListener("keydown", onKeydown);
-  window.addEventListener("wheel", onScrollIntent, { passive: true });
-  window.addEventListener("touchmove", onScrollIntent, { passive: true });
+  run().catch(() => finish(false));
 };
 
 const buildProjectIndex = () => {
