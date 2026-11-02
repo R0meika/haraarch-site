@@ -2798,6 +2798,14 @@ button:focus-visible,
 
 .hi-top {
   top: 0;
+  transform-origin: 0 0;
+}
+
+.hi-top,
+.hi-bottom,
+.hi-logo,
+.hi-line {
+  will-change: transform, opacity;
 }
 
 .hi-bottom {

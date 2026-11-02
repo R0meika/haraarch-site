@@ -142,6 +142,10 @@ const buildIntroOverlay = () => {
       return;
     }
 
+    // decode the first project picture now, so opening the site does not stall on it
+    const hero = document.querySelector(".project-row img");
+    const warm = hero && hero.decode ? hero.decode().catch(() => {}) : Promise.resolve();
+
     const sw = root.clientWidth;
     const sh = root.clientHeight;
     const tb = topbar.getBoundingClientRect();
@@ -176,9 +180,11 @@ const buildIntroOverlay = () => {
 
     const line = layer("hi-line");
     line.style.height = `${th}px`;
-    line.style.top = `${y0}px`;
-    line.style.left = `${sw / 2}px`;
-    line.style.width = "0px";
+    line.style.top = `${lineY}px`;
+    line.style.left = `${lineL}px`;
+    line.style.width = `${lineR - lineL}px`;
+    line.style.transformOrigin = `${sw / 2 - lineL}px 50%`;
+    line.style.transform = `translateY(${y0 - lineY}px) scaleX(0)`;
 
     root.querySelector(".hi-cover").remove();
 
@@ -209,17 +215,19 @@ const buildIntroOverlay = () => {
     accent.style.transition = "opacity 250ms ease, transform 320ms ease";
     accent.style.opacity = "1";
     accent.style.transform = "translateY(0) rotate(-58deg)";
-    await wait(380);
+    await wait(300);
     if (done) return;
     logo.innerHTML = brand.outerHTML; // the exact header markup, so the landing matches pixel for pixel
+    await Promise.race([warm, wait(300)]); // the picture is decoded and the new layer is painted before anything moves
+    await wait(80);
+    if (done) return;
+    void root.offsetHeight; // commit the starting styles so every transition below starts from them
 
     const ease = "950ms cubic-bezier(0.65, 0, 0.35, 1)";
-    top.style.transition = `height ${ease}`;
-    top.style.height = `${lineY + th}px`;
-    line.style.transition = `top ${ease}, left ${ease}, width ${ease}`;
-    line.style.top = `${lineY}px`;
-    line.style.left = `${lineL}px`;
-    line.style.width = `${lineR - lineL}px`;
+    top.style.transition = `transform ${ease}`;
+    top.style.transform = `scaleY(${(lineY + th) / y0})`;
+    line.style.transition = `transform ${ease}`;
+    line.style.transform = "translateY(0) scaleX(1)";
     logo.style.transition = `transform ${ease}`;
     logo.style.transform = "translate(0px, 0px) scale(1)";
     bottom.style.transition = "opacity 400ms ease";
