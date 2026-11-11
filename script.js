@@ -10,14 +10,14 @@ const projectNavItems = [
   {
     href: "kushchevka.html",
     number: "0.2",
-    title: "Частный жилой дом",
+    title: "Дом в Ростове-на-Дону",
     meta: "350 м² | г. Ростов-на-Дону, Россия",
     status: "В реализации",
   },
   {
     href: "voronezh.html",
     number: "0.3",
-    title: "Частный жилой дом",
+    title: "Дом в Воронеже",
     meta: "150 м² | г. Воронеж, Россия",
     status: "В реализации",
   },
@@ -52,7 +52,7 @@ const projectNavItems = [
   {
     href: "dom.html",
     number: "0.8",
-    title: "Частный жилой дом",
+    title: "Дом в Московской области",
     meta: "170 м² | Московская область, Россия",
     status: "В реализации",
   },
@@ -60,7 +60,7 @@ const projectNavItems = [
 // projects:end
 
 // services:start
-const servicesPublished = false;
+const servicesPublished = true;
 // services:end
 
 const buildIntroOverlay = () => {
@@ -516,7 +516,17 @@ buildMobileContactDock();
 const contactTriggers = document.querySelectorAll(".js-contact-trigger");
 const conceptTriggers = document.querySelectorAll('a[href="#practice"], a[href$="#practice"]');
 
-const openContactOverlay = () => {
+const contactWhatsApp = contactOverlay.querySelector('a[href^="https://wa.me/"]');
+const contactWhatsAppBase = contactWhatsApp ? contactWhatsApp.getAttribute("href") : "";
+
+const openContactOverlay = (text) => {
+  if (contactWhatsApp) {
+    contactWhatsApp.setAttribute(
+      "href",
+      text ? `${contactWhatsAppBase.split("?")[0]}?text=${encodeURIComponent(text)}` : contactWhatsAppBase,
+    );
+  }
+
   contactOverlay.classList.add("is-open");
   contactOverlay.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
@@ -545,6 +555,17 @@ contactTriggers.forEach((trigger) => {
     event.preventDefault();
     openContactOverlay();
   });
+});
+
+document.addEventListener("click", (event) => {
+  const apply = event.target.closest("[data-apply]");
+
+  if (!apply) {
+    return;
+  }
+
+  event.preventDefault();
+  openContactOverlay(`Здравствуйте! Хочу оставить заявку: ${apply.dataset.apply}.`);
 });
 
 conceptTriggers.forEach((trigger) => {

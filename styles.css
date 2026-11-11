@@ -2827,3 +2827,67 @@ button:focus-visible,
   position: absolute;
   background: var(--line);
 }
+
+/* services: items and apply buttons */
+.service-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid rgba(17, 19, 21, 0.18);
+}
+
+.service-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 28px;
+  align-items: start;
+  padding: 18px 0;
+  border-top: 1px solid rgba(17, 19, 21, 0.18);
+}
+
+.service-item h3 {
+  margin: 0;
+  font-weight: 500;
+}
+
+.service-item p {
+  max-width: 40rem;
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.service-apply {
+  padding: 0;
+  border: 0;
+  color: var(--text);
+  background: transparent;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.service-apply:hover {
+  color: var(--muted);
+}
+
+.service-apply--main {
+  justify-self: start;
+}
+
+.draft-mark {
+  padding: 0 4px;
+  background: #fff4c2;
+  color: var(--text);
+}
+
+@media (max-width: 760px) {
+  .service-item {
+    grid-template-columns: 1fr;
+  }
+
+  .service-apply {
+    justify-self: start;
+  }
+}
