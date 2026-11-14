@@ -3073,3 +3073,36 @@ button:focus-visible,
 .project-case .services-block {
   padding: 28px 0 32px;
 }
+
+/* phone: gallery strip - one picture per screen, same box for all, no peeking neighbour */
+@media (max-width: 760px) {
+  .project-gallery {
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+
+  .project-gallery figure,
+  .project-gallery figure.gallery-item--landscape,
+  .project-gallery figure.gallery-item--square,
+  .project-gallery figure.gallery-item--portrait {
+    width: calc(100vw - var(--page-gutter) * 2);
+    max-width: none;
+  }
+
+  .project-gallery img {
+    width: 100%;
+    height: 56vw;
+    min-height: 0;
+    max-height: none;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .project-gallery--single figure {
+    width: 100%;
+  }
+
+  .project-gallery--single img {
+    height: auto;
+  }
+}
