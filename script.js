@@ -254,6 +254,8 @@ const buildProjectIndex = () => {
   document.body.classList.add("has-project-index");
 
   const currentFile = window.location.pathname.split("/").pop() || "";
+  // project pages live in /projects/; services and about pages are in the site root
+  const linkPrefix = window.location.pathname.includes("/projects/") ? "" : "projects/";
   const projectIndex = document.createElement("aside");
   projectIndex.className = "project-index";
   projectIndex.setAttribute("aria-label", "Навигация по проектам");
@@ -266,7 +268,7 @@ const buildProjectIndex = () => {
           .map((item) => {
             const isCurrent = item.href === currentFile;
             return `
-              <a class="project-index-link${isCurrent ? " is-current" : ""}" href="${item.href}"${isCurrent ? ' aria-current="page"' : ""}>
+              <a class="project-index-link${isCurrent ? " is-current" : ""}" href="${linkPrefix}${item.href}"${isCurrent ? ' aria-current="page"' : ""}>
                 <span class="project-index-number">${item.number}</span>
                 <span>
                   ${item.title}
@@ -281,6 +283,22 @@ const buildProjectIndex = () => {
   `;
 
   shell.insertBefore(projectIndex, projectMain);
+
+  const currentIndex = projectNavItems.findIndex((item) => item.href === currentFile);
+
+  if (currentIndex !== -1) {
+    const next = projectNavItems[(currentIndex + 1) % projectNavItems.length];
+    const nextSection = document.createElement("section");
+    nextSection.className = "next-project section";
+    nextSection.innerHTML = `
+      <a class="next-project-link" href="${linkPrefix}${next.href}">
+        <span class="next-project-label">Следующий проект</span>
+        <span class="next-project-title">${next.title}</span>
+        <span class="next-project-meta">${next.meta} | ${next.status}</span>
+      </a>
+    `;
+    projectMain.append(nextSection);
+  }
 
   const list = projectIndex.querySelector(".project-index-list");
   const currentLink = projectIndex.querySelector(".project-index-link.is-current");
@@ -304,7 +322,7 @@ const buildProjectIndex = () => {
         .filter((item) => item.href !== currentFile)
         .map(
           (item) => `
-            <a class="project-switcher-link" href="${item.href}">
+            <a class="project-switcher-link" href="${linkPrefix}${item.href}">
               <span><span class="project-switcher-number">${item.number}</span>${item.title}</span>
               <small>${item.meta} | ${item.status}</small>
             </a>
@@ -338,9 +356,24 @@ const buildMobileServiceNav = () => {
   topbar.insertAdjacentElement("afterend", serviceNav);
 };
 
+const markCurrentNav = () => {
+  const onServices = window.location.pathname.endsWith("services.html");
+  const onAbout = window.location.pathname.endsWith("about.html");
+  const onWorks = !onServices && !onAbout && (Boolean(document.getElementById("home")) || window.location.pathname.includes("/projects/"));
+
+  document.querySelectorAll(".nav a").forEach((link) => {
+    const href = link.getAttribute("href") || "";
+
+    if ((onAbout && href.endsWith("about.html")) || (onServices && href.endsWith("services.html")) || (onWorks && href.includes("#works"))) {
+      link.setAttribute("aria-current", "page");
+    }
+  });
+};
+
 buildIntroOverlay();
 buildMobileServiceNav();
 buildProjectIndex();
+markCurrentNav();
 
 const projectRows = document.querySelectorAll(".project-row[data-category]");
 const projectFilterLinks = document.querySelectorAll("[data-project-filter]");
@@ -613,6 +646,26 @@ if (window.location.hash === "#contact") {
 
 if (window.location.hash === "#practice") {
   openConceptOverlay();
+}
+
+const fadeImages = document.querySelectorAll(".project-gallery img, .project-render img, .realization-card img");
+
+if (fadeImages.length) {
+  document.documentElement.classList.add("js-fade");
+  const showImage = (image) => image.classList.add("is-loaded");
+
+  fadeImages.forEach((image) => {
+    if (image.complete && image.naturalWidth) {
+      showImage(image);
+      return;
+    }
+
+    image.addEventListener("load", () => showImage(image), { once: true });
+    image.addEventListener("error", () => showImage(image), { once: true });
+  });
+
+  // safety net: never leave a picture invisible
+  window.setTimeout(() => fadeImages.forEach(showImage), 4000);
 }
 
 const revealItems = document.querySelectorAll(".reveal");
@@ -907,7 +960,8 @@ const renderLightboxItem = () => {
 
   lightboxImage.src = image.currentSrc || image.src;
   lightboxImage.alt = image.alt || "";
-  lightboxCaption.textContent = activeGalleryItems.length > 1 ? `${activeGalleryIndex + 1} / ${activeGalleryItems.length}` : "";
+  const counter = activeGalleryItems.length > 1 ? `${activeGalleryIndex + 1} / ${activeGalleryItems.length}` : "";
+  lightboxCaption.textContent = counter;
 };
 
 const openLightbox = (items, index, gallery) => {
