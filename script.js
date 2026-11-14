@@ -537,11 +537,26 @@ const buildMobileContactDock = () => {
     return;
   }
 
-  const dock = document.createElement("button");
-  dock.className = "mobile-contact-dock js-contact-trigger";
-  dock.type = "button";
-  dock.textContent = "Контакты";
-  dock.setAttribute("aria-label", "Открыть контакты");
+  const inProjects = window.location.pathname.includes("/projects/");
+  const onServices = window.location.pathname.endsWith("services.html");
+  const root = inProjects ? "../" : "";
+  const dock = document.createElement("div");
+  dock.className = "mobile-contact-dock";
+
+  if (servicesPublished) {
+    const left = document.createElement("a");
+    left.className = "mobile-dock-link";
+    left.href = onServices ? `${root}index.html#works` : `${root}services.html`;
+    left.textContent = onServices ? "Проекты" : "Услуги";
+    dock.append(left);
+  }
+
+  const contact = document.createElement("button");
+  contact.className = "mobile-dock-link js-contact-trigger";
+  contact.type = "button";
+  contact.textContent = "Контакты";
+  contact.setAttribute("aria-label", "Открыть контакты");
+  dock.append(contact);
   document.body.append(dock);
 };
 

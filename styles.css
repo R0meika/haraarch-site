@@ -3079,6 +3079,7 @@ button:focus-visible,
   .project-gallery {
     align-items: flex-start;
     padding-top: 20px;
+    width: calc(100% - var(--page-gutter) * 2);
   }
 
   .project-gallery figure,
@@ -3104,5 +3105,41 @@ button:focus-visible,
 
   .project-gallery--single img {
     height: auto;
+  }
+}
+/* phone: bottom bar with two parts - Services (or Projects) and Contacts */
+@media (max-width: 760px) {
+  .mobile-contact-dock {
+    padding: 0 0 env(safe-area-inset-bottom);
+  }
+
+  .mobile-dock-link {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    min-height: 38px;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .mobile-dock-link {
+    position: relative;
+  }
+
+  /* short divider the height of the text, same as in the Concept | Architecture | Design bar */
+  .mobile-dock-link + .mobile-dock-link::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 1.2em;
+    border-left: 1px solid rgba(17, 19, 21, 0.36);
+    transform: translateY(-50%);
   }
 }
